@@ -1,0 +1,30 @@
+{
+  "name": "tasket-api",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "hono": "^4.8.4",
+    "pg": "^8.16.3",
+    "prisma": "^6.11.1"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir ./dist",
+    "start": "bun dist/index.js",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:reset": "prisma migrate reset --force",
+    "db:set": "bun run migrate && bun run migrate:deploy && bun run db:generate && bun run db:push",
+    "lint": "eslint src/**/*.ts",
+    "test": "bun test",
+    "check": "bun tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id      Int     @id @default(autoincrement())
+  name    String  @db.VarChar(255)
+  members User[]  @relation("WorkspaceMembers")
+  boards  Board[]
+
+  @@index([name])
+}
+
+model Board {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@index([workspaceId])
+  @@index([title])
+}
+
+model Task {
+  id          Int         @id @default(autoincrement())
+  title       String      @db.VarChar(255)
+  description String?     @db.Text
+  labels      String[]
+  dueDate     DateTime?
+  attachments String[]
+  comments    Comment[]
+  boardId     Int
+  board       Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  checklists  Checklist[]
+  assignedTo  Int?
+  user        User?       @relation(fields: [assignedTo], references: [id])
+  status      String      @default("todo") @db.VarChar(50)
+  position    Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([boardId])
+  @@index([assignedTo])
+  @@index([dueDate])
+  @@index([status])
+  @@index([boardId, status])
+  @@index([boardId, position])
+}
+
+model Checklist {
+  id     Int             @id @default(autoincrement())
+  title  String          @db.VarChar(255)
+  taskId Int
+  task   Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  items  ChecklistItem[]
+
+  @@index([taskId])
+}
+
+model ChecklistItem {
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(255)
+  dueDate      DateTime?
+  assignedTo   Int?
+  checklistId  Int
+  checklist    Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  assignedUser User?     @relation("ChecklistItemAssignments", fields: [assignedTo], references: [id])
+  completed    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([checklistId])
+  @@index([assignedTo])
+  @@index([dueDate])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation("CommentAuthor", fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+  @@index([authorId])
+  @@index([taskId, createdAt])
+}
+
+model User {
+  id                     Int             @id @default(autoincrement())
+  username               String          @unique @db.VarChar(100)
+  email                  String          @unique @db.VarChar(255)
+  password               String          @db.VarChar(255)
+  workspaces             Workspace[]     @relation("WorkspaceMembers")
+  assignedTasks          Task[]
+  assignedChecklistItems ChecklistItem[] @relation("ChecklistItemAssignments")
+  comments               Comment[]       @relation("CommentAuthor")
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  @@index([email])
+  @@index([username])
+}
