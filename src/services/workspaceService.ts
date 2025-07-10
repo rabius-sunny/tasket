@@ -1,13 +1,5 @@
+import { Workspace } from '@prisma/client';
 import prisma from '../lib/prisma';
-import {
-  Workspace,
-  Board,
-  Task,
-  Checklist,
-  ChecklistItem,
-  Comment,
-  User
-} from '@prisma/client';
 
 export class WorkspaceService {
   // Optimized query to get workspace with all related data in one query
@@ -91,6 +83,12 @@ export class WorkspaceService {
       select: {
         id: true,
         name: true,
+        members: {
+          select: {
+            id: true,
+            username: true
+          }
+        },
         _count: {
           select: {
             boards: true,
