@@ -73,10 +73,35 @@ function TasksContent() {
 
   if (boardLoading || tasksLoading) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
+      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center'>
         <div className='text-center'>
-          <div className='w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading tasks...</p>
+          <div className='relative'>
+            <div className='w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6'></div>
+            <div
+              className='absolute inset-0 w-16 h-16 border-4 border-purple-200 border-b-purple-600 rounded-full animate-spin mx-auto'
+              style={{
+                animationDirection: 'reverse',
+                animationDuration: '1.5s'
+              }}
+            ></div>
+          </div>
+          <h3 className='text-xl font-semibold text-gray-900 mb-2'>
+            Loading Your Board
+          </h3>
+          <p className='text-gray-600'>
+            Preparing your tasks and organizing everything...
+          </p>
+          <div className='mt-4 flex justify-center space-x-1'>
+            <div className='w-2 h-2 bg-indigo-400 rounded-full animate-bounce'></div>
+            <div
+              className='w-2 h-2 bg-purple-400 rounded-full animate-bounce'
+              style={{ animationDelay: '0.1s' }}
+            ></div>
+            <div
+              className='w-2 h-2 bg-pink-400 rounded-full animate-bounce'
+              style={{ animationDelay: '0.2s' }}
+            ></div>
+          </div>
         </div>
       </div>
     );
@@ -84,20 +109,36 @@ function TasksContent() {
 
   if (boardError || tasksError) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-center'>
-          <h2 className='text-xl font-semibold text-gray-900 mb-2'>
-            Failed to load board
+      <div className='min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center'>
+        <div className='text-center max-w-md mx-auto p-8'>
+          <div className='w-20 h-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6'>
+            <svg
+              className='w-10 h-10 text-white'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z'
+              />
+            </svg>
+          </div>
+          <h2 className='text-2xl font-bold text-gray-900 mb-3'>
+            Oops! Something went wrong
           </h2>
-          <p className='text-gray-600 mb-4'>
-            There was an error loading the board or tasks
+          <p className='text-gray-600 mb-6'>
+            We couldn&apos;t load your board or tasks. This might be a temporary
+            issue.
           </p>
           <button
             onClick={() => {
               mutateBoardData();
               mutateTasks();
             }}
-            className='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700'
+            className='bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105'
           >
             Try Again
           </button>
@@ -125,10 +166,33 @@ export default function TasksPage() {
   return (
     <Suspense
       fallback={
-        <div className='min-h-screen flex items-center justify-center'>
+        <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center'>
           <div className='text-center'>
-            <div className='w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
-            <p className='text-gray-600'>Loading tasks...</p>
+            <div className='relative mb-8'>
+              <div className='w-20 h-20 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto'></div>
+              <div
+                className='absolute inset-0 w-20 h-20 border-4 border-purple-200 border-b-purple-600 rounded-full animate-spin mx-auto'
+                style={{
+                  animationDirection: 'reverse',
+                  animationDuration: '2s'
+                }}
+              ></div>
+            </div>
+            <h3 className='text-2xl font-bold text-gray-900 mb-2'>
+              Initializing Board
+            </h3>
+            <p className='text-gray-600'>Setting up your workspace...</p>
+            <div className='mt-6 flex justify-center space-x-2'>
+              <div className='w-3 h-3 bg-indigo-400 rounded-full animate-bounce'></div>
+              <div
+                className='w-3 h-3 bg-purple-400 rounded-full animate-bounce'
+                style={{ animationDelay: '0.1s' }}
+              ></div>
+              <div
+                className='w-3 h-3 bg-pink-400 rounded-full animate-bounce'
+                style={{ animationDelay: '0.2s' }}
+              ></div>
+            </div>
           </div>
         </div>
       }

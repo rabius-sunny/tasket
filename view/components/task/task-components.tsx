@@ -241,66 +241,89 @@ export const CreateTaskModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title='Create New Task'
-      size='lg'
+      title='✨ Create New Task'
+      size='xl'
     >
+      <div className='text-center mb-8'>
+        <div className='w-20 h-20 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
+          <Plus className='h-10 w-10 text-white' />
+        </div>
+        <h3 className='text-xl font-bold text-gray-900 mb-2'>Add a New Task</h3>
+        <p className='text-gray-600'>
+          Create a task for the{' '}
+          <span className='font-semibold text-blue-600'>
+            {status.replace('-', ' ')}
+          </span>{' '}
+          column
+        </p>
+      </div>
+
       <form
         onSubmit={handleSubmit}
-        className='space-y-4'
+        className='space-y-6'
       >
-        <Input
-          label='Task Title'
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder='Enter task title'
-          required
-        />
-
-        <Textarea
-          label='Description (Optional)'
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder='Describe your task...'
-          rows={3}
-        />
-
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div className='space-y-4'>
           <Input
-            label='Due Date (Optional)'
-            type='datetime-local'
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
+            label='Task Title'
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder='e.g., Design user interface, Fix login bug'
+            required
+            className='text-lg'
           />
 
+          <Textarea
+            label='Description (Optional)'
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder='Describe what needs to be done...'
+            rows={4}
+            className='resize-none'
+          />
+
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <Input
+              label='Due Date (Optional)'
+              type='datetime-local'
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+
+            <Input
+              label='Assigned To (User ID - Optional)'
+              type='number'
+              value={assignedTo}
+              onChange={(e) => setAssignedTo(e.target.value)}
+              placeholder='Enter user ID'
+            />
+          </div>
+
           <Input
-            label='Assigned To (User ID - Optional)'
-            type='number'
-            value={assignedTo}
-            onChange={(e) => setAssignedTo(e.target.value)}
-            placeholder='Enter user ID'
+            label='Labels (Optional)'
+            value={labels}
+            onChange={(e) => setLabels(e.target.value)}
+            placeholder='backend, frontend, urgent, bug-fix'
+            helperText='Separate multiple labels with commas'
           />
         </div>
 
-        <Input
-          label='Labels (Optional)'
-          value={labels}
-          onChange={(e) => setLabels(e.target.value)}
-          placeholder='Comma-separated labels (e.g., backend, auth, high-priority)'
-        />
-
-        <div className='flex justify-end space-x-3 pt-4'>
+        <div className='flex justify-end space-x-4 pt-8 border-t border-gray-100'>
           <Button
             type='button'
             variant='outline'
             onClick={onClose}
+            size='lg'
+            className='px-8'
           >
             Cancel
           </Button>
           <Button
             type='submit'
             isLoading={isLoading}
+            size='lg'
+            className='bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-8 hover:shadow-lg transition-all duration-300 hover:scale-105'
           >
-            Create Task
+            {isLoading ? 'Creating...' : 'Create Task'}
           </Button>
         </div>
       </form>
@@ -470,7 +493,6 @@ interface KanbanColumnProps {
   onAddTask: (status: string) => void;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: number) => void;
-  color: string;
 }
 
 export const KanbanColumn = ({
@@ -479,8 +501,7 @@ export const KanbanColumn = ({
   tasks,
   onAddTask,
   onEditTask,
-  onDeleteTask,
-  color
+  onDeleteTask
 }: KanbanColumnProps) => {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
@@ -490,27 +511,70 @@ export const KanbanColumn = ({
     }
   });
 
+  // Column gradient mappings
+  const columnStyles = {
+    todo: {
+      gradient: 'from-gray-100 to-gray-200',
+      headerGradient: 'from-gray-500 to-gray-600',
+      hoverGradient: 'from-gray-200 to-gray-300',
+      borderColor: 'border-gray-300'
+    },
+    'in-progress': {
+      gradient: 'from-blue-100 to-blue-200',
+      headerGradient: 'from-blue-500 to-blue-600',
+      hoverGradient: 'from-blue-200 to-blue-300',
+      borderColor: 'border-blue-300'
+    },
+    review: {
+      gradient: 'from-yellow-100 to-yellow-200',
+      headerGradient: 'from-yellow-500 to-yellow-600',
+      hoverGradient: 'from-yellow-200 to-yellow-300',
+      borderColor: 'border-yellow-300'
+    },
+    completed: {
+      gradient: 'from-green-100 to-green-200',
+      headerGradient: 'from-green-500 to-green-600',
+      hoverGradient: 'from-green-200 to-green-300',
+      borderColor: 'border-green-300'
+    }
+  };
+
+  const styleConfig =
+    columnStyles[status as keyof typeof columnStyles] || columnStyles.todo;
+
   return (
     <div
       ref={setNodeRef}
-      className={`bg-gray-50 rounded-lg p-4 min-h-[500px] w-80 transition-all duration-300 ease-in-out ${
-        isOver
-          ? 'bg-blue-50 border-2 border-blue-300 shadow-lg transform scale-105'
-          : 'hover:shadow-md'
-      }`}
+      className={`
+        bg-gradient-to-b ${styleConfig.gradient} 
+        rounded-2xl p-6 min-h-[600px] w-80 
+        transition-all duration-300 ease-in-out
+        border-2 ${styleConfig.borderColor}
+        shadow-lg hover:shadow-xl
+        ${
+          isOver
+            ? `bg-gradient-to-b ${styleConfig.hoverGradient} border-4 shadow-2xl transform scale-105 rotate-1`
+            : 'hover:scale-102'
+        }
+      `}
     >
-      <div className='flex items-center justify-between mb-4'>
-        <div className='flex items-center space-x-2'>
+      {/* Column Header */}
+      <div className='flex items-center justify-between mb-6'>
+        <div className='flex items-center space-x-3'>
           <div
-            className={`w-3 h-3 rounded-full ${color} transition-all duration-200 ${
-              isOver ? 'animate-pulse scale-125' : ''
-            }`}
+            className={`w-4 h-4 rounded-full bg-gradient-to-r ${
+              styleConfig.headerGradient
+            } shadow-md ${isOver ? 'animate-pulse scale-125' : ''}`}
           />
-          <h3 className='font-semibold text-gray-900'>{title}</h3>
+          <h3 className='font-bold text-lg text-gray-800'>{title}</h3>
           <Badge
             variant='secondary'
             size='sm'
-            className='transition-all duration-200 hover:scale-110'
+            className={`
+              bg-white/70 backdrop-blur text-gray-700 border-white/50
+              transition-all duration-200 hover:scale-110 hover:bg-white/90
+              ${isOver ? 'animate-bounce' : ''}
+            `}
           >
             {tasks.length}
           </Badge>
@@ -520,29 +584,83 @@ export const KanbanColumn = ({
           variant='ghost'
           size='sm'
           onClick={() => onAddTask(status)}
-          className='p-1 hover:bg-blue-100 transition-all duration-200 hover:scale-110'
+          className={`
+            p-2 rounded-xl bg-white/50 hover:bg-white/80 backdrop-blur
+            transition-all duration-200 hover:scale-110 hover:rotate-12
+            shadow-md hover:shadow-lg
+            ${isOver ? 'animate-pulse bg-white/90' : ''}
+          `}
         >
-          <Plus className='h-4 w-4' />
+          <Plus className='h-5 w-5 text-gray-700' />
         </Button>
       </div>
 
-      <div className='space-y-3'>
-        {tasks.map((task) => (
-          <TaskCard
+      {/* Tasks Container */}
+      <div className='space-y-4'>
+        {tasks.map((task, index) => (
+          <div
             key={task.id}
-            task={task}
-            onEdit={onEditTask}
-            onDelete={onDeleteTask}
-          />
+            className='animate-in fade-in slide-in-from-top-2 duration-300'
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <TaskCard
+              task={task}
+              onEdit={onEditTask}
+              onDelete={onDeleteTask}
+            />
+          </div>
         ))}
 
-        {/* Drop zone indicator */}
-        {isOver && tasks.length === 0 && (
-          <div className='border-2 border-dashed border-blue-300 rounded-lg p-8 text-center text-blue-600 animate-pulse'>
-            <Plus className='h-8 w-8 mx-auto mb-2' />
-            <p className='text-sm font-medium'>Drop task here</p>
+        {/* Enhanced Drop Zone */}
+        {isOver && (
+          <div
+            className={`
+            border-2 border-dashed ${styleConfig.borderColor}
+            rounded-xl p-8 text-center
+            bg-white/50 backdrop-blur
+            animate-pulse
+            transition-all duration-300
+          `}
+          >
+            <div
+              className={`w-12 h-12 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} flex items-center justify-center mx-auto mb-3 animate-bounce`}
+            >
+              <Plus className='h-6 w-6 text-white' />
+            </div>
+            <p className='text-sm font-semibold text-gray-700'>
+              Drop task here
+            </p>
+            <p className='text-xs text-gray-500 mt-1'>Release to move task</p>
           </div>
         )}
+
+        {/* Empty State */}
+        {tasks.length === 0 && !isOver && (
+          <div className='text-center py-12 opacity-50'>
+            <div
+              className={`w-16 h-16 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} flex items-center justify-center mx-auto mb-4 opacity-20`}
+            >
+              <Plus className='h-8 w-8 text-white' />
+            </div>
+            <p className='text-sm text-gray-600'>No tasks yet</p>
+            <p className='text-xs text-gray-500 mt-1'>Add your first task</p>
+          </div>
+        )}
+      </div>
+
+      {/* Column Footer Stats */}
+      <div className='mt-6 pt-4 border-t border-white/30'>
+        <div className='flex items-center justify-between text-xs text-gray-600'>
+          <span>Tasks: {tasks.length}</span>
+          {tasks.length > 0 && (
+            <span className='flex items-center'>
+              <div
+                className={`w-2 h-2 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} mr-1 animate-pulse`}
+              ></div>
+              Active
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

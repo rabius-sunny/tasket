@@ -3,7 +3,7 @@
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import { Board, Task } from '@/types';
 import {
@@ -19,13 +19,19 @@ import {
 import {
   ArrowLeft,
   BarChart3,
+  Calendar,
   CheckSquare,
   Clock,
   Filter,
   MessageCircle,
   Paperclip,
   Settings,
-  Users
+  Sparkles,
+  Star,
+  Target,
+  TrendingUp,
+  Users,
+  Zap
 } from 'lucide-react';
 import { useState } from 'react';
 import { CreateTaskModal, KanbanColumn } from '../task/task-components';
@@ -194,139 +200,236 @@ export const KanbanBoard = ({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className='space-y-6'>
-        {/* Header */}
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center space-x-4'>
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={onBack}
-            >
-              <ArrowLeft className='h-4 w-4 mr-2' />
-              Back
-            </Button>
-            <div>
-              <h1 className='text-2xl font-bold text-gray-900'>
-                {board.title}
-              </h1>
-              <p className='text-gray-600'>{board.workspace?.name}</p>
+      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
+        {/* Fancy Header */}
+        <div className='relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600'>
+          <div className='absolute inset-0 bg-black/10'></div>
+
+          {/* Floating background elements */}
+          <div className='absolute top-0 left-0 w-full h-full overflow-hidden'>
+            <div className='absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse'></div>
+            <div className='absolute top-20 right-20 w-16 h-16 bg-yellow-300/20 rounded-full animate-bounce'></div>
+            <div className='absolute bottom-10 left-1/4 w-12 h-12 bg-pink-300/20 rounded-full animate-ping'></div>
+            <div className='absolute top-1/3 right-1/3 w-8 h-8 bg-blue-300/30 rounded-full animate-pulse'></div>
+          </div>
+
+          <div className='relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center space-x-6'>
+                <Button
+                  variant='ghost'
+                  size='lg'
+                  onClick={onBack}
+                  className='text-white hover:bg-white/20 transition-all duration-300 hover:scale-105'
+                >
+                  <ArrowLeft className='h-5 w-5 mr-2' />
+                  Back to Boards
+                </Button>
+
+                <div className='flex items-center space-x-4'>
+                  {/* Board Avatar */}
+                  <div className='w-16 h-16 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center border border-white/30'>
+                    <Target className='h-8 w-8 text-white' />
+                  </div>
+
+                  <div>
+                    <h1 className='text-3xl md:text-4xl font-bold text-white mb-1 flex items-center'>
+                      {board.title}
+                      <Sparkles className='h-6 w-6 ml-2 text-yellow-300 animate-pulse' />
+                    </h1>
+                    <div className='flex items-center space-x-2'>
+                      <p className='text-blue-100 text-lg'>
+                        {board.workspace?.name}
+                      </p>
+                      <Badge className='bg-white/20 text-white border-white/30'>
+                        <Star className='h-3 w-3 mr-1' />
+                        Active Board
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='flex items-center space-x-3'>
+                <Button
+                  variant='ghost'
+                  size='lg'
+                  className='text-white border-white/30 hover:bg-white/20 transition-all duration-300 hover:scale-105'
+                >
+                  <Filter className='h-5 w-5 mr-2' />
+                  Filter
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='lg'
+                  className='text-white border-white/30 hover:bg-white/20 transition-all duration-300 hover:scale-105'
+                >
+                  <Users className='h-5 w-5 mr-2' />
+                  Team
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='lg'
+                  className='text-white border-white/30 hover:bg-white/20 transition-all duration-300 hover:scale-105'
+                >
+                  <Settings className='h-5 w-5 mr-2' />
+                  Settings
+                </Button>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div className='flex items-center space-x-3'>
-            <Button
-              variant='outline'
-              size='sm'
-              className='flex items-center space-x-2'
-            >
-              <Filter className='h-4 w-4' />
-              <span>Filter</span>
-            </Button>
-            <Button
-              variant='outline'
-              size='sm'
-              className='flex items-center space-x-2'
-            >
-              <Users className='h-4 w-4' />
-              <span>Members</span>
-            </Button>
-            <Button
-              variant='outline'
-              size='sm'
-              className='flex items-center space-x-2'
-            >
-              <Settings className='h-4 w-4' />
-              <span>Settings</span>
-            </Button>
+        {/* Enhanced Statistics Dashboard */}
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+            <Card className='group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg bg-gradient-to-br from-white to-blue-50'>
+              <CardContent className='p-6'>
+                <div className='flex items-center justify-between mb-4'>
+                  <div className='p-3 bg-blue-500 rounded-xl group-hover:scale-110 transition-transform duration-300'>
+                    <BarChart3 className='h-6 w-6 text-white' />
+                  </div>
+                  <TrendingUp className='h-5 w-5 text-green-500' />
+                </div>
+                <div>
+                  <p className='text-sm font-medium text-gray-600 mb-1'>
+                    Total Tasks
+                  </p>
+                  <p className='text-3xl font-bold text-gray-900'>
+                    {totalTasks}
+                  </p>
+                  <p className='text-xs text-green-600 font-medium'>
+                    +12% this week
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className='group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg bg-gradient-to-br from-white to-purple-50'>
+              <CardContent className='p-6'>
+                <div className='flex items-center justify-between mb-4'>
+                  <div className='p-3 bg-purple-500 rounded-xl group-hover:scale-110 transition-transform duration-300'>
+                    <Zap className='h-6 w-6 text-white' />
+                  </div>
+                  <Badge
+                    variant='primary'
+                    size='sm'
+                    className='animate-pulse'
+                  >
+                    Active
+                  </Badge>
+                </div>
+                <div>
+                  <p className='text-sm font-medium text-gray-600 mb-1'>
+                    In Progress
+                  </p>
+                  <p className='text-3xl font-bold text-purple-600'>
+                    {inProgressTasks}
+                  </p>
+                  <p className='text-xs text-purple-600 font-medium'>
+                    Currently working
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className='group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg bg-gradient-to-br from-white to-green-50'>
+              <CardContent className='p-6'>
+                <div className='flex items-center justify-between mb-4'>
+                  <div className='p-3 bg-green-500 rounded-xl group-hover:scale-110 transition-transform duration-300'>
+                    <CheckSquare className='h-6 w-6 text-white' />
+                  </div>
+                  <Badge
+                    variant='success'
+                    size='sm'
+                  >
+                    ✓ Done
+                  </Badge>
+                </div>
+                <div>
+                  <p className='text-sm font-medium text-gray-600 mb-1'>
+                    Completed
+                  </p>
+                  <p className='text-3xl font-bold text-green-600'>
+                    {completedTasks}
+                  </p>
+                  <p className='text-xs text-green-600 font-medium'>
+                    {totalTasks > 0
+                      ? Math.round((completedTasks / totalTasks) * 100)
+                      : 0}
+                    % complete
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className='group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg bg-gradient-to-br from-white to-red-50'>
+              <CardContent className='p-6'>
+                <div className='flex items-center justify-between mb-4'>
+                  <div className='p-3 bg-red-500 rounded-xl group-hover:scale-110 transition-transform duration-300'>
+                    <Calendar className='h-6 w-6 text-white' />
+                  </div>
+                  <Badge
+                    variant='danger'
+                    size='sm'
+                    className={overdueTasks > 0 ? 'animate-pulse' : ''}
+                  >
+                    ⚠ Late
+                  </Badge>
+                </div>
+                <div>
+                  <p className='text-sm font-medium text-gray-600 mb-1'>
+                    Overdue
+                  </p>
+                  <p className='text-3xl font-bold text-red-600'>
+                    {overdueTasks}
+                  </p>
+                  <p className='text-xs text-red-600 font-medium'>
+                    Need attention
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
 
-        {/* Board Statistics */}
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-          <Card>
-            <CardHeader className='pb-2'>
-              <div className='flex items-center justify-between'>
-                <p className='text-sm text-gray-600'>Total Tasks</p>
-                <BarChart3 className='h-4 w-4 text-gray-400' />
+          {/* Enhanced Kanban Board */}
+          <div className='bg-white rounded-2xl shadow-xl border border-gray-100 p-6'>
+            <div className='flex items-center justify-between mb-6'>
+              <h2 className='text-2xl font-bold text-gray-900 flex items-center'>
+                <Target className='h-6 w-6 mr-2 text-indigo-600' />
+                Task Board
+              </h2>
+              <div className='flex items-center space-x-2'>
+                <div className='flex items-center space-x-1 text-sm text-gray-600'>
+                  <div className='w-2 h-2 bg-green-400 rounded-full animate-pulse'></div>
+                  Live Updates
+                </div>
               </div>
-            </CardHeader>
-            <CardContent className='pt-0'>
-              <p className='text-2xl font-bold text-gray-900'>{totalTasks}</p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader className='pb-2'>
-              <div className='flex items-center justify-between'>
-                <p className='text-sm text-gray-600'>In Progress</p>
-                <Badge
-                  variant='primary'
-                  size='sm'
-                >
-                  Active
-                </Badge>
+            <div className='overflow-x-auto'>
+              <div
+                className='flex space-x-6 pb-4'
+                style={{ minWidth: 'max-content' }}
+              >
+                {columns.map((column, index) => (
+                  <div
+                    key={column.status}
+                    className='animate-in fade-in slide-in-from-bottom-4 duration-500'
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <KanbanColumn
+                      title={column.title}
+                      status={column.status}
+                      tasks={getTasksByStatus(column.status)}
+                      onAddTask={handleAddTask}
+                      onEditTask={handleEditTask}
+                      onDeleteTask={handleDeleteTask}
+                    />
+                  </div>
+                ))}
               </div>
-            </CardHeader>
-            <CardContent className='pt-0'>
-              <p className='text-2xl font-bold text-blue-600'>
-                {inProgressTasks}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className='pb-2'>
-              <div className='flex items-center justify-between'>
-                <p className='text-sm text-gray-600'>Completed</p>
-                <Badge
-                  variant='success'
-                  size='sm'
-                >
-                  Done
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className='pt-0'>
-              <p className='text-2xl font-bold text-green-600'>
-                {completedTasks}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className='pb-2'>
-              <div className='flex items-center justify-between'>
-                <p className='text-sm text-gray-600'>Overdue</p>
-                <Badge
-                  variant='danger'
-                  size='sm'
-                >
-                  Late
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className='pt-0'>
-              <p className='text-2xl font-bold text-red-600'>{overdueTasks}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Kanban Board */}
-        <div className='overflow-x-auto'>
-          <div className='flex space-x-6 pb-4'>
-            {columns.map((column) => (
-              <KanbanColumn
-                key={column.status}
-                title={column.title}
-                status={column.status}
-                tasks={getTasksByStatus(column.status)}
-                onAddTask={handleAddTask}
-                onEditTask={handleEditTask}
-                onDeleteTask={handleDeleteTask}
-                color={column.color}
-              />
-            ))}
+            </div>
           </div>
         </div>
 
@@ -341,10 +444,10 @@ export const KanbanBoard = ({
           status={selectedStatus}
         />
 
-        {/* Drag Overlay */}
+        {/* Enhanced Drag Overlay */}
         <DragOverlay>
           {activeTask && (
-            <Card className='shadow-2xl border-2 border-blue-400 cursor-grabbing group rotate-2 scale-110 animate-pulse bg-white'>
+            <Card className='shadow-2xl border-2 border-indigo-400 cursor-grabbing group rotate-2 scale-110 animate-pulse bg-white'>
               <CardContent className='p-4'>
                 <div className='space-y-3'>
                   {/* Labels */}
