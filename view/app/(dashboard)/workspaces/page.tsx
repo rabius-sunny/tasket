@@ -3,17 +3,13 @@
 import { useAuth } from '@/components/auth/auth-context';
 import { WorkspaceList } from '@/components/workspace/workspace-list';
 import { useWorkspaces } from '@/lib/hooks';
-import { Workspace } from '@/types';
+import { useRouter } from 'next/navigation';
 
 export default function WorkspacesPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { workspaces, isLoading, error, createWorkspace, mutate } =
     useWorkspaces(user?.id);
-
-  const handleSelectWorkspace = (workspace: Workspace) => {
-    // Navigate to boards page with workspace context
-    window.location.href = `/boards?workspace=${workspace.id}`;
-  };
+  const { push } = useRouter();
 
   const handleCreateWorkspace = async (data: { name: string }) => {
     try {
@@ -35,12 +31,6 @@ export default function WorkspacesPage() {
         </div>
       </div>
     );
-  }
-
-  // Redirect to login if not authenticated
-  if (!user) {
-    window.location.href = '/auth';
-    return null;
   }
 
   if (isLoading) {
@@ -103,7 +93,9 @@ export default function WorkspacesPage() {
   return (
     <WorkspaceList
       workspaces={workspaces || []}
-      onSelectWorkspace={handleSelectWorkspace}
+      onSelectWorkspace={(workspace) =>
+        push(`/boards?workspace=${workspace.id}`)
+      }
       onCreateWorkspace={handleCreateWorkspace}
     />
   );
