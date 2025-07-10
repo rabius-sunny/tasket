@@ -1,22 +1,24 @@
 'use client';
 
 import { KanbanBoard } from '@/components/board/kanban-board';
-import { useBoard, useTasks } from '@/lib/hooks';
-import { Task } from '@/types';
+import { useTasks } from '@/helper/tasks';
+import { useAsync } from '@/lib/hooks';
+import { Board, Task } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-// Create a separate component for the tasks content that uses useSearchParams
 function TasksContent() {
   const searchParams = useSearchParams();
   const boardId = searchParams.get('board');
 
   const {
-    board: selectedBoard,
-    isLoading: boardLoading,
+    data: selectedBoard,
     error: boardError,
+    isLoading: boardLoading,
     mutate: mutateBoardData
-  } = useBoard(boardId ? parseInt(boardId) : null);
+  } = useAsync<Board>(boardId ? `/boards/${boardId}` : null);
+
+  console.log('selected board', { selectedBoard, boardId });
 
   const {
     tasks,
@@ -27,11 +29,6 @@ function TasksContent() {
     deleteTask,
     mutate: mutateTasks
   } = useTasks(boardId ? parseInt(boardId) : undefined);
-
-  const handleBack = () => {
-    // Navigate back to boards page
-    window.history.back();
-  };
 
   const handleCreateTask = async (data: {
     title: string;
@@ -148,16 +145,13 @@ function TasksContent() {
   }
 
   return (
-    <div>
-      {selectedBoard && (
-        <KanbanBoard
-          board={{ ...selectedBoard, tasks: tasks || [] }}
-          onBack={handleBack}
-          onUpdateTask={handleUpdateTask}
-          onCreateTask={handleCreateTask}
-          onDeleteTask={handleDeleteTask}
-        />
-      )}
+    <div className='animate-fade-in-up'>
+      <KanbanBoard
+        board={{ ...selectedBoard, tasks: tasks || [] }}
+        onUpdateTask={handleUpdateTask}
+        onCreateTask={handleCreateTask}
+        onDeleteTask={handleDeleteTask}
+      />
     </div>
   );
 }

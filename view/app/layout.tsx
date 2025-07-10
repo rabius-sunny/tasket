@@ -1,5 +1,4 @@
 import { AuthProvider } from '@/components/auth/auth-context';
-import { SWRProvider } from '@/lib/swr-provider';
 import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
 import { Toaster } from 'sonner';
@@ -23,9 +22,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={raleway.className}
       >
-        <SWRProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </SWRProvider>
+        <AuthProvider>{children}</AuthProvider>
         <Toaster closeButton />
       </body>
     </html>

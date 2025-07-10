@@ -27,18 +27,18 @@ import {
   Paperclip,
   Settings,
   Sparkles,
-  Star,
   Target,
   TrendingUp,
   Users,
   Zap
 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { CreateTaskModal, KanbanColumn } from '../task/task-components';
 
 interface KanbanBoardProps {
   board: Board;
-  onBack: () => void;
   onUpdateTask: (taskId: number, data: Partial<Task>) => Promise<void>;
   onCreateTask: (data: {
     title: string;
@@ -52,7 +52,6 @@ interface KanbanBoardProps {
 
 export const KanbanBoard = ({
   board,
-  onBack,
   onCreateTask,
   onDeleteTask,
   onUpdateTask
@@ -60,6 +59,7 @@ export const KanbanBoard = ({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const { back } = useRouter();
 
   // Setup sensors for drag detection
   const sensors = useSensors(
@@ -202,8 +202,8 @@ export const KanbanBoard = ({
     >
       <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
         {/* Fancy Header */}
-        <div className='relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600'>
-          <div className='absolute inset-0 bg-black/10'></div>
+        <div className='relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-10'>
+          <div className='absolute inset-0 bg-black/20'></div>
 
           {/* Floating background elements */}
           <div className='absolute top-0 left-0 w-full h-full overflow-hidden'>
@@ -214,12 +214,11 @@ export const KanbanBoard = ({
           </div>
 
           <div className='relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center space-x-6'>
+            <div className='flex flex-col lg:flex-row gap-4 lg:gap-0 items-center justify-between'>
+              <div className='flex flex-col lg:flex-row gap-4 lg:gap-0 items-center space-x-6'>
                 <Button
                   variant='ghost'
-                  size='lg'
-                  onClick={onBack}
+                  onClick={() => back()}
                   className='text-white hover:bg-white/20 transition-all duration-300 hover:scale-105'
                 >
                   <ArrowLeft className='h-5 w-5 mr-2' />
@@ -228,7 +227,7 @@ export const KanbanBoard = ({
 
                 <div className='flex items-center space-x-4'>
                   {/* Board Avatar */}
-                  <div className='w-16 h-16 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center border border-white/30'>
+                  <div className='size-8 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center border border-white/30'>
                     <Target className='h-8 w-8 text-white' />
                   </div>
 
@@ -238,13 +237,12 @@ export const KanbanBoard = ({
                       <Sparkles className='h-6 w-6 ml-2 text-yellow-300 animate-pulse' />
                     </h1>
                     <div className='flex items-center space-x-2'>
-                      <p className='text-blue-100 text-lg'>
+                      <Link
+                        href={`/boards?workspace=${board.workspace?.id}`}
+                        className='text-blue-100 text-lg underline'
+                      >
                         {board.workspace?.name}
-                      </p>
-                      <Badge className='bg-white/20 text-white border-white/30'>
-                        <Star className='h-3 w-3 mr-1' />
-                        Active Board
-                      </Badge>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -282,7 +280,7 @@ export const KanbanBoard = ({
 
         {/* Enhanced Statistics Dashboard */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10'>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+          <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8'>
             <Card className='group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg bg-gradient-to-br from-white to-blue-50'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between mb-4'>
@@ -415,8 +413,8 @@ export const KanbanBoard = ({
                 {columns.map((column, index) => (
                   <div
                     key={column.status}
-                    className='animate-in fade-in slide-in-from-bottom-4 duration-500'
-                    style={{ animationDelay: `${index * 100}ms` }}
+                    className='animate-fade-in-up'
+                    style={{ animationDelay: `${index * 300}ms` }}
                   >
                     <KanbanColumn
                       title={column.title}

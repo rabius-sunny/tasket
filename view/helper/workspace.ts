@@ -1,0 +1,46 @@
+import { useAsync } from '@/lib/hooks';
+import requests from '@/lib/http';
+import { handleAction } from '@/lib/utils';
+import { Workspace } from '@/types';
+
+export function useWorkspaces(userId?: number) {
+  const { data, error, isLoading, mutate } = useAsync<Workspace[]>(
+    userId ? `/workspaces?userId=${userId}` : null
+  );
+
+  const createWorkspace = (workspaceData: {
+    name: string;
+    memberIds: (number | undefined)[];
+  }) =>
+    handleAction(async () => {
+      const response = await requests.post('/workspaces', {
+        ...workspaceData,
+        admin: userId
+      });
+      mutate();
+      return response;
+    }, 'createWorkspace');
+
+  const updateWorkspace = (id: number, workspaceData: { name: string }) =>
+    handleAction(async () => {
+      const response = await requests.put(`/workspaces/${id}`, workspaceData);
+      mutate();
+      return response;
+    }, 'updateWorkspace');
+
+  const deleteWorkspace = (id: number) =>
+    handleAction(async () => {
+      await requests.delete(`/workspaces/${id}`);
+      mutate();
+    }, 'deleteWorkspace');
+
+  return {
+    workspaces: data,
+    error,
+    isLoading,
+    createWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
+    mutate
+  };
+}

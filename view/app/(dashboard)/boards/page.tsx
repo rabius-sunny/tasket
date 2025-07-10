@@ -1,24 +1,19 @@
 'use client';
 
 import { BoardList } from '@/components/board/board-list';
-import { useBoards } from '@/lib/hooks';
-import { Board } from '@/types';
-import { useSearchParams } from 'next/navigation';
+import { useBoards } from '@/helper/boards';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 // Create a separate component for the boards content that uses useSearchParams
 function BoardsContent() {
   const searchParams = useSearchParams();
   const workspaceId = searchParams.get('workspace');
+  const { push } = useRouter();
 
   const { boards, isLoading, error, createBoard, mutate } = useBoards(
     workspaceId ? parseInt(workspaceId) : undefined
   );
-
-  const handleSelectBoard = (board: Board) => {
-    // Navigate to tasks page with board context
-    window.location.href = `/tasks?board=${board.id}`;
-  };
 
   const handleCreateBoard = async (data: {
     title: string;
@@ -33,7 +28,7 @@ function BoardsContent() {
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center'>
+      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center '>
         <div className='text-center'>
           <div className='relative'>
             <div className='w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6'></div>
@@ -89,13 +84,15 @@ function BoardsContent() {
   }
 
   return (
-    <BoardList
-      boards={boards || []}
-      onSelectBoard={handleSelectBoard}
-      onCreateBoard={handleCreateBoard}
-      workspaceId={parseInt(workspaceId || '1')}
-      workspaceName={`Workspace ${workspaceId || '1'}`}
-    />
+    <div className='animate-fade-in-up'>
+      <BoardList
+        boards={boards || []}
+        onSelectBoard={(board) => push(`/tasks?board=${board.id}`)}
+        onCreateBoard={handleCreateBoard}
+        workspaceId={parseInt(workspaceId || '1')}
+        workspaceName={`Workspace ${workspaceId || '1'}`}
+      />
+    </div>
   );
 }
 

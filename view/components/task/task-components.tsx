@@ -554,7 +554,7 @@ export const KanbanColumn = ({
         ${
           isOver
             ? `bg-gradient-to-b ${styleConfig.hoverGradient} border-4 shadow-2xl transform scale-105 rotate-1`
-            : 'hover:scale-102'
+            : ''
         }
       `}
     >

@@ -3,7 +3,7 @@
 import { useAuth } from '@/components/auth/auth-context';
 import message from '@/components/ui/message';
 import { WorkspaceList } from '@/components/workspace/workspace-list';
-import { useWorkspaces } from '@/lib/hooks';
+import { useWorkspaces } from '@/helper/workspace';
 import { useRouter } from 'next/navigation';
 
 export default function WorkspacesPage() {
@@ -93,12 +93,14 @@ export default function WorkspacesPage() {
   }
 
   return (
-    <WorkspaceList
-      workspaces={workspaces || []}
-      onSelectWorkspace={(workspace) =>
-        push(`/boards?workspace=${workspace.id}`)
-      }
-      onCreateWorkspace={handleCreateWorkspace}
-    />
+    <div className='animate-fade-in-up'>
+      <WorkspaceList
+        workspaces={workspaces || []}
+        onSelectWorkspace={(workspace) =>
+          push(`/boards?workspace=${workspace.id}`)
+        }
+        onCreateWorkspace={handleCreateWorkspace}
+      />
+    </div>
   );
 }
