@@ -1,6 +1,6 @@
 import { Context } from 'hono';
-import { boardService } from '../services/boardService';
 import prisma from '../lib/prisma';
+import { boardService } from '../services/boardService';
 
 export class BoardController {
   async createBoard(workspaceId: number, boardData: any, c: Context) {
@@ -44,14 +44,14 @@ export class BoardController {
     }
   }
 
-  async getBoard(workspaceId: number, boardId: number, c: Context) {
+  async getBoard(boardId: number, c: Context) {
     try {
       const includeTasks = c.req.query('includeTasks') === 'true';
 
       if (includeTasks) {
         const board = await boardService.getBoardWithTasks(boardId);
 
-        if (!board || board.workspaceId !== workspaceId) {
+        if (!board) {
           return c.json({ error: 'Board not found' }, 404);
         }
 
@@ -74,7 +74,8 @@ export class BoardController {
           }
         });
 
-        if (!board || board.workspaceId !== workspaceId) {
+        if (!board) {
+          // if (!board || board.workspaceId !== workspaceId) {
           return c.json({ error: 'Board not found' }, 404);
         }
 

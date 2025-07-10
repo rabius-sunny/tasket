@@ -21,7 +21,12 @@ boards.get('/workspaces/:workspaceId/boards', async (c) => {
 boards.get('/workspaces/:workspaceId/boards/:boardId', async (c) => {
   const workspaceId = parseInt(c.req.param('workspaceId'));
   const boardId = parseInt(c.req.param('boardId'));
-  return boardController.getBoard(workspaceId, boardId, c);
+  return boardController.getBoard(boardId, c);
+});
+
+boards.get('/boards/:boardId', async (c) => {
+  const boardId = parseInt(c.req.param('boardId'));
+  return boardController.getBoard(boardId, c);
 });
 
 // Update a board
