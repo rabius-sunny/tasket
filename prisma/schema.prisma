@@ -14,6 +14,7 @@ model Workspace {
   id      Int     @id @default(autoincrement())
   name    String  @db.VarChar(255)
   members User[]  @relation("WorkspaceMembers")
+  admin   Int
   boards  Board[]
 
   @@index([name])

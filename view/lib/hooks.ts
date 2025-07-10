@@ -62,7 +62,7 @@ export function useWorkspaces(userId?: number) {
     const response = await fetch(`${API_BASE}/api/workspaces`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(workspaceData)
+      body: JSON.stringify({ ...workspaceData, admin: userId })
     });
 
     if (!response.ok) {

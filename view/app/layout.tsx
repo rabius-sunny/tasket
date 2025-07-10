@@ -2,6 +2,7 @@ import { AuthProvider } from '@/components/auth/auth-context';
 import { SWRProvider } from '@/lib/swr-provider';
 import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const raleway = Raleway({ subsets: ['latin'] });
@@ -25,6 +26,7 @@ export default function RootLayout({
         <SWRProvider>
           <AuthProvider>{children}</AuthProvider>
         </SWRProvider>
+        <Toaster closeButton />
       </body>
     </html>
   );

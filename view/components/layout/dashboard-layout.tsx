@@ -4,8 +4,6 @@ import { useAuth } from '@/components/auth/auth-context';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
-  CheckSquare,
-  Folders,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -31,8 +29,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const navigation = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
     { name: 'Workspaces', icon: Users, href: '/workspaces' },
-    { name: 'Boards', icon: Folders, href: '/boards' },
-    { name: 'Tasks', icon: CheckSquare, href: '/tasks' },
     { name: 'Settings', icon: Settings, href: '/settings' }
   ];
 

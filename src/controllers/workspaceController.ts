@@ -1,15 +1,16 @@
 import { Context } from 'hono';
-import { workspaceService } from '../services/workspaceService';
 import prisma from '../lib/prisma';
+import { workspaceService } from '../services/workspaceService';
 
 export class WorkspaceController {
   async createWorkspace(c: Context) {
     try {
-      const { name, memberIds } = await c.req.json();
+      const { name, memberIds, admin } = await c.req.json();
 
       const workspace = await prisma.workspace.create({
         data: {
           name,
+          admin,
           members: {
             connect: memberIds?.map((id: number) => ({ id })) || []
           }
