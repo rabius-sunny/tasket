@@ -18,7 +18,17 @@ interface WorkspaceCardProps {
 export const WorkspaceCard = ({ workspace, onSelect }: WorkspaceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const gradient = 'from-cyan-400 via-blue-500 to-indigo-600';
+  const gradients = [
+    'from-blue-500 via-purple-500 to-pink-500',
+    'from-green-400 via-blue-500 to-purple-600',
+    'from-yellow-400 via-red-500 to-pink-500',
+    'from-purple-400 via-pink-500 to-red-500',
+    'from-indigo-400 via-purple-500 to-pink-500',
+    'from-cyan-400 via-blue-500 to-indigo-600'
+  ];
+
+  const gradientIndex = workspace.name.length % gradients.length;
+  const gradient = gradients[gradientIndex];
 
   return (
     <div
