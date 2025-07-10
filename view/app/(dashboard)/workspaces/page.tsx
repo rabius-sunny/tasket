@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/components/auth/auth-context';
+import message from '@/components/ui/message';
 import { WorkspaceList } from '@/components/workspace/workspace-list';
 import { useWorkspaces } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
@@ -15,9 +16,10 @@ export default function WorkspacesPage() {
     try {
       await createWorkspace({ ...data, memberIds: [user?.id] });
       mutate(); // Revalidate the workspaces data
+      message.success('Workspace created successfully!');
     } catch (error) {
       console.error('Error creating workspace:', error);
-      // You could show a toast notification here
+      message.error('Failed to create workspace. Please try again later.');
     }
   };
 
