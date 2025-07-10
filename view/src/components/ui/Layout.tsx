@@ -11,7 +11,7 @@ import {
   Search,
   Bell,
   User
-} from 'lucide-react';
+} from 'lucide-solid';
 import { Dropdown, DropdownItem, DropdownDivider } from './Dropdown';
 import Button from './Button';
 

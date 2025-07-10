@@ -12,7 +12,7 @@ import {
   Clock,
   MessageSquare,
   Paperclip
-} from 'lucide-react';
+} from 'lucide-solid';
 import Layout from '~/components/ui/Layout';
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/Card';
 import Button from '~/components/ui/Button';

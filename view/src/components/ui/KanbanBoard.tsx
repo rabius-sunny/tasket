@@ -8,7 +8,7 @@ import {
   MessageSquare,
   Paperclip,
   CheckCircle2
-} from 'lucide-react';
+} from 'lucide-solid';
 import { Card } from './Card';
 import Button from './Button';
 import { Dropdown, DropdownItem, DropdownDivider } from './Dropdown';

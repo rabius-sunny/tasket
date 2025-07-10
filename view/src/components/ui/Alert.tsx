@@ -1,5 +1,5 @@
 import { JSX, Show } from 'solid-js';
-import { Info, CheckCircle, AlertTriangle, XCircle, X } from 'lucide-react';
+import { Info, CheckCircle, AlertTriangle, XCircle, X } from 'lucide-solid';
 
 interface AlertProps {
   variant?: 'info' | 'success' | 'warning' | 'error';

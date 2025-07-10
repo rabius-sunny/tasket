@@ -1,5 +1,5 @@
 import { JSX, Show, createSignal, onMount, onCleanup } from 'solid-js';
-import { X } from 'lucide-react';
+import { X } from 'lucide-solid';
 
 interface ModalProps {
   show: boolean;

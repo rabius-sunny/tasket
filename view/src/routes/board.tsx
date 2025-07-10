@@ -2,7 +2,7 @@ import { createSignal } from 'solid-js';
 import Layout from '~/components/ui/Layout';
 import { KanbanBoard } from '~/components/ui/KanbanBoard';
 import Button from '~/components/ui/Button';
-import { Plus, Filter, Users, Settings } from 'lucide-react';
+import { Plus, Filter, Users, Settings } from 'lucide-solid';
 
 interface BoardTask {
   id: string;

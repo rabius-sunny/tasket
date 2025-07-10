@@ -10,7 +10,7 @@ import {
   Trash2,
   FolderKanban,
   Activity
-} from 'lucide-react';
+} from 'lucide-solid';
 import {
   Card,
   CardHeader,

@@ -1,5 +1,5 @@
 import { JSX, splitProps } from 'solid-js';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-solid';
 
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
