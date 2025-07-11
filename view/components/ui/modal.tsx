@@ -69,7 +69,8 @@ const Modal = ({
             'inline-block w-full text-left align-bottom transition-all transform',
             'bg-white dark:bg-gray-800 rounded-lg shadow-custom-xl sm:my-8 sm:align-middle border border-gray-200 dark:border-gray-700',
             'relative z-modal-content',
-            sizeClasses[size]
+            sizeClasses[size],
+            'max-h-[85vh] overflow-y-auto'
           )}
         >
           {title && (

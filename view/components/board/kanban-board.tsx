@@ -74,22 +74,22 @@ export const KanbanBoard = ({
 
   const columns = [
     {
-      title: 'To Do',
+      title: 'To Do 📝',
       status: 'todo',
       color: 'bg-gray-400'
     },
     {
-      title: 'In Progress',
+      title: 'In Progress 🚧',
       status: 'in-progress',
       color: 'bg-blue-400'
     },
     {
-      title: 'Review',
+      title: 'Review 🔍',
       status: 'review',
       color: 'bg-yellow-400'
     },
     {
-      title: 'Done',
+      title: 'Done ✅',
       status: 'completed',
       color: 'bg-green-400'
     }

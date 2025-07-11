@@ -1,19 +1,13 @@
 import { Context } from 'hono';
-import { taskService } from '../services/taskService';
 import prisma from '../lib/prisma';
+import { taskService } from '../services/taskService';
 
 export class TaskController {
   async createTask(c: Context) {
     try {
-      const {
-        title,
-        description,
-        labels,
-        dueDate,
-        boardId,
-        assignedTo,
-        status
-      } = await c.req.json();
+      const { title, description, labels, dueDate, assignedTo, status } =
+        await c.req.json();
+      const boardId = c.req.param('boardId');
 
       const task = await prisma.task.create({
         data: {
