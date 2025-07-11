@@ -9,8 +9,6 @@ import { Modal } from '@/components/ui/modal';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDate, getDueDateStatus } from '@/lib/utils';
 import { Task } from '@/types';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 import {
   AlertCircle,
   CheckSquare,
@@ -32,30 +30,8 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
   const [showActions, setShowActions] = useState(false);
   const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null;
 
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: task.id.toString(),
-      data: {
-        type: 'task',
-        task
-      }
-    });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    transition: 'transform 0.2s ease'
-  };
-
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`${
-        isDragging ? 'invisibles' : ''
-      } transition-all duration-200 ease-in-out`}
-      {...attributes}
-      {...listeners}
-    >
+    <div className='transition-all duration-200 ease-in-out'>
       <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:scale-105 hover:rotate-1'>
         <CardContent className='p-4'>
           <div className='space-y-3'>
@@ -503,14 +479,6 @@ export const KanbanColumn = ({
   onEditTask,
   onDeleteTask
 }: KanbanColumnProps) => {
-  const { setNodeRef, isOver } = useDroppable({
-    id: status,
-    data: {
-      type: 'column',
-      status
-    }
-  });
-
   // Column gradient mappings
   const columnStyles = {
     todo: {
@@ -544,27 +512,19 @@ export const KanbanColumn = ({
 
   return (
     <div
-      ref={setNodeRef}
       className={`
         bg-gradient-to-b ${styleConfig.gradient} 
         rounded-2xl p-6 min-h-[600px] w-80 
         transition-all duration-300 ease-in-out
         border-2 ${styleConfig.borderColor}
         shadow-lg hover:shadow-xl
-        ${
-          isOver
-            ? `bg-gradient-to-b ${styleConfig.hoverGradient} border-4 shadow-2xl transform scale-105 rotate-1`
-            : ''
-        }
       `}
     >
       {/* Column Header */}
       <div className='flex items-center justify-between mb-6'>
         <div className='flex items-center space-x-3'>
           <div
-            className={`w-4 h-4 rounded-full bg-gradient-to-r ${
-              styleConfig.headerGradient
-            } shadow-md ${isOver ? 'animate-pulse scale-125' : ''}`}
+            className={`w-4 h-4 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} shadow-md`}
           />
           <h3 className='font-bold text-lg text-gray-800'>{title}</h3>
           <Badge
@@ -573,7 +533,6 @@ export const KanbanColumn = ({
             className={`
               bg-white/70 backdrop-blur text-gray-700 border-white/50
               transition-all duration-200 hover:scale-110 hover:bg-white/90
-              ${isOver ? 'animate-bounce' : ''}
             `}
           >
             {tasks.length}
@@ -588,7 +547,6 @@ export const KanbanColumn = ({
             p-2 rounded-xl bg-white/50 hover:bg-white/80 backdrop-blur
             transition-all duration-200 hover:scale-110 hover:rotate-12
             shadow-md hover:shadow-lg
-            ${isOver ? 'animate-pulse bg-white/90' : ''}
           `}
         >
           <Plus className='h-5 w-5 text-gray-700' />
@@ -612,30 +570,9 @@ export const KanbanColumn = ({
         ))}
 
         {/* Enhanced Drop Zone */}
-        {isOver && (
-          <div
-            className={`
-            border-2 border-dashed ${styleConfig.borderColor}
-            rounded-xl p-8 text-center
-            bg-white/50 backdrop-blur
-            animate-pulse
-            transition-all duration-300
-          `}
-          >
-            <div
-              className={`w-12 h-12 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} flex items-center justify-center mx-auto mb-3 animate-bounce`}
-            >
-              <Plus className='h-6 w-6 text-white' />
-            </div>
-            <p className='text-sm font-semibold text-gray-700'>
-              Drop task here
-            </p>
-            <p className='text-xs text-gray-500 mt-1'>Release to move task</p>
-          </div>
-        )}
 
         {/* Empty State */}
-        {tasks.length === 0 && !isOver && (
+        {tasks.length === 0 && (
           <div className='text-center py-12 opacity-50'>
             <div
               className={`w-16 h-16 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} flex items-center justify-center mx-auto mb-4 opacity-20`}
