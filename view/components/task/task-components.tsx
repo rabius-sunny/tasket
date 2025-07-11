@@ -51,7 +51,7 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
       ref={setNodeRef}
       style={style}
       className={`${
-        isDragging ? 'invisible' : ''
+        isDragging ? 'invisibles' : ''
       } transition-all duration-200 ease-in-out`}
       {...attributes}
       {...listeners}

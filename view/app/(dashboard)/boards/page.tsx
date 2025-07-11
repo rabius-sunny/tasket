@@ -1,6 +1,6 @@
 'use client';
 
-import { BoardList } from '@/components/board/board-list';
+import BoardList from '@/components/board/board-list';
 import PageLoader from '@/components/ui/page-loader';
 import { useBoards } from '@/helper/boards';
 import { useRouter, useSearchParams } from 'next/navigation';
