@@ -64,6 +64,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                   pathname === item.href
                     ? 'text-blue-600 bg-blue-50'
@@ -146,7 +147,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Sidebar overlay */}
       {sidebarOpen && (
         <div
-          className='fixed inset-0 bg-gray-600 bg-opacity-50 z-40 lg:hidden'
+          className='fixed inset-0 bg-black/60  z-40 lg:hidden'
           onClick={() => setSidebarOpen(false)}
         />
       )}

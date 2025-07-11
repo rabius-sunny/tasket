@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from '@/lib/utils';
 import { ReactNode, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -23,8 +25,6 @@ const Modal = ({
     } else {
       document.body.style.overflow = 'unset';
     }
-
-    // Cleanup function to restore scroll when component unmounts
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -37,7 +37,6 @@ const Modal = ({
         onClose();
       }
     };
-
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
@@ -51,21 +50,20 @@ const Modal = ({
     xl: 'max-w-xl'
   };
 
-  return (
+  // Render modal in a portal to cover the whole screen
+  return createPortal(
     <div className='fixed inset-0 z-modal overflow-y-auto'>
       <div className='flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0'>
         <div
-          className='fixed inset-0 transition-opacity bg-secondary-900 bg-opacity-50 backdrop-blur-sm z-modal-backdrop'
+          className='fixed inset-0 transition-opacity bg-black/20 backdrop-blur-sm z-modal-backdrop'
           onClick={onClose}
         />
-
         <span
           className='hidden sm:inline-block sm:align-middle sm:h-screen'
           aria-hidden='true'
         >
           &#8203;
         </span>
-
         <div
           className={cn(
             'inline-block w-full text-left align-bottom transition-all transform',
@@ -86,7 +84,8 @@ const Modal = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    typeof window !== 'undefined' ? document.body : (null as any)
   );
 };
 
