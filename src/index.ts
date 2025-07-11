@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
-import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
-import workspacesRoutes from './routes/workspaces';
+import { logger } from 'hono/logger';
+import authRoutes from './routes/auth';
 import boardsRoutes from './routes/boards';
 import tasksRoutes from './routes/tasks';
-import authRoutes from './routes/auth';
+import workspacesRoutes from './routes/workspaces';
 
 const app = new Hono();
 
@@ -33,7 +33,7 @@ app.onError((err, c) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 console.log(`🚀 Server starting on port ${PORT}`);
 console.log(`📋 Tasket API v1.0.0`);

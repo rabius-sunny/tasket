@@ -105,7 +105,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Main content */}
       <div className='flex-1 flex flex-col overflow-hidden'>
         {/* Top bar */}
-        <div className='bg-white shadow-sm border-b border-gray-200 px-4 py-4 lg:px-6'>
+        <div className='bg-white h-20 shadow-lg border-b border-gray-200 px-4 py-4 lg:px-6'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center'>
               <button
@@ -139,7 +139,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {/* Page content */}
         <main className='flex-1 overflow-y-auto'>
-          <div className='p-4 lg:p-6'>{children}</div>
+          <div className=''>{children}</div>
         </main>
       </div>
 

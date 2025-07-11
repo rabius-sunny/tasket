@@ -1,6 +1,7 @@
 'use client';
 
 import { KanbanBoard } from '@/components/board/kanban-board';
+import PageLoader from '@/components/ui/page-loader';
 import { useTasks } from '@/helper/tasks';
 import { useAsync } from '@/lib/hooks';
 import { Board, Task } from '@/types';
@@ -17,8 +18,6 @@ function TasksContent() {
     isLoading: boardLoading,
     mutate: mutateBoardData
   } = useAsync<Board>(boardId ? `/boards/${boardId}` : null);
-
-  console.log('selected board', { selectedBoard, boardId });
 
   const {
     tasks,
@@ -70,37 +69,10 @@ function TasksContent() {
 
   if (boardLoading || tasksLoading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='relative'>
-            <div className='w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6'></div>
-            <div
-              className='absolute inset-0 w-16 h-16 border-4 border-purple-200 border-b-purple-600 rounded-full animate-spin mx-auto'
-              style={{
-                animationDirection: 'reverse',
-                animationDuration: '1.5s'
-              }}
-            ></div>
-          </div>
-          <h3 className='text-xl font-semibold text-gray-900 mb-2'>
-            Loading Your Board
-          </h3>
-          <p className='text-gray-600'>
-            Preparing your tasks and organizing everything...
-          </p>
-          <div className='mt-4 flex justify-center space-x-1'>
-            <div className='w-2 h-2 bg-indigo-400 rounded-full animate-bounce'></div>
-            <div
-              className='w-2 h-2 bg-purple-400 rounded-full animate-bounce'
-              style={{ animationDelay: '0.1s' }}
-            ></div>
-            <div
-              className='w-2 h-2 bg-pink-400 rounded-full animate-bounce'
-              style={{ animationDelay: '0.2s' }}
-            ></div>
-          </div>
-        </div>
-      </div>
+      <PageLoader
+        title='Board'
+        subTitle='Tasks'
+      />
     );
   }
 

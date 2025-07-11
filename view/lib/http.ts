@@ -1,15 +1,14 @@
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 class Network {
   private static getAuthHeader() {
     const token = localStorage.getItem('token');
     return token ? { Authorization: `Bearer ${token}` } : undefined;
   }
 
-  // a private const
-  private static readonly API_BASE =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
   public async get(url: string, options?: RequestInit) {
-    const response = await fetch(Network.API_BASE + url, {
+    const response = await fetch(API_BASE_URL + url, {
       ...options,
       method: 'GET',
       headers: {
@@ -21,7 +20,7 @@ class Network {
   }
 
   public async post(url: string, body: unknown, options?: RequestInit) {
-    const response = await fetch(Network.API_BASE + url, {
+    const response = await fetch(API_BASE_URL + url, {
       ...options,
       method: 'POST',
       headers: {
@@ -35,7 +34,7 @@ class Network {
   }
 
   public async put(url: string, body: unknown, options?: RequestInit) {
-    const response = await fetch(Network.API_BASE + url, {
+    const response = await fetch(API_BASE_URL + url, {
       ...options,
       method: 'PUT',
       headers: {
@@ -49,7 +48,7 @@ class Network {
   }
 
   public async delete(url: string, options?: RequestInit) {
-    const response = await fetch(Network.API_BASE + url, {
+    const response = await fetch(API_BASE_URL + url, {
       ...options,
       method: 'DELETE',
       headers: {

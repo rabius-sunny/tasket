@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/components/auth/auth-context';
 import message from '@/components/ui/message';
+import PageLoader from '@/components/ui/page-loader';
 import { WorkspaceList } from '@/components/workspace/workspace-list';
 import { useWorkspaces } from '@/helper/workspace';
 import { useRouter } from 'next/navigation';
@@ -23,51 +24,12 @@ export default function WorkspacesPage() {
     }
   };
 
-  // Show loading if auth is loading
-  if (authLoading) {
+  if (authLoading || isLoading) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='relative'>
-            <div className='w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6'></div>
-            <div
-              className='absolute inset-0 w-16 h-16 border-4 border-purple-200 border-b-purple-600 rounded-full animate-spin mx-auto'
-              style={{
-                animationDirection: 'reverse',
-                animationDuration: '1.5s'
-              }}
-            ></div>
-          </div>
-          <h3 className='text-xl font-semibold text-gray-900 mb-2'>
-            Loading Your Workspaces
-          </h3>
-          <p className='text-gray-600'>
-            Preparing your workspaces and organizing everything...
-          </p>
-          <div className='mt-4 flex justify-center space-x-1'>
-            <div className='w-2 h-2 bg-indigo-400 rounded-full animate-bounce'></div>
-            <div
-              className='w-2 h-2 bg-purple-400 rounded-full animate-bounce'
-              style={{ animationDelay: '0.1s' }}
-            ></div>
-            <div
-              className='w-2 h-2 bg-pink-400 rounded-full animate-bounce'
-              style={{ animationDelay: '0.2s' }}
-            ></div>
-          </div>
-        </div>
-      </div>
+      <PageLoader
+        title='Workspace'
+        subTitle='Workspaces'
+      />
     );
   }
 
