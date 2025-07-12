@@ -21,8 +21,7 @@ const DragDropBoard = forwardRef<HTMLDivElement, DragDropBoardProps>(
     return (
       <div
         ref={ref}
-        className='flex justify-start gap-6 p-6 overflow-x-auto min-h-screen'
-        style={{ minHeight: '600px' }}
+        className='flex gap-6 p-6 bg-red-300'
       >
         {children}
       </div>

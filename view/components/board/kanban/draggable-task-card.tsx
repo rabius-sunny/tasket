@@ -30,7 +30,7 @@ import { dropTargetForExternal } from '@atlaskit/pragmatic-drag-and-drop/externa
 import { token } from '@atlaskit/tokens';
 
 import { Task } from '@/types';
-import { TaskCard } from '../task/task-components';
+import { TaskCard } from '../../task/task-components';
 import { useBoardContext } from './board-context';
 
 type State =

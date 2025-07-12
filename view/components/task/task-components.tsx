@@ -37,37 +37,47 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
         ref={ref}
         className='transition-all duration-200 ease-in-out'
       >
-        <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:scale-105 hover:rotate-1'>
+        <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:ring-2 hover:ring-primary'>
           <CardContent className='p-4'>
-            <div className='space-y-3'>
-              {/* Labels */}
-              {task.labels && task.labels.length > 0 && (
-                <div className='flex flex-wrap gap-1'>
-                  {task.labels.map((label, index) => (
-                    <Badge
-                      key={index}
-                      variant='secondary'
-                      size='sm'
-                      className='transition-all duration-200 hover:scale-110'
+            {/* Actions */}
+            <div className='relative flex justify-end'>
+              <Button
+                ref={actionMenuTriggerRef}
+                variant='ghost'
+                size='sm'
+                className='p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowActions(!showActions);
+                }}
+              >
+                <MoreHorizontal className='h-4 w-4' />
+              </Button>
+
+              {showActions && (
+                <div className='absolute right-0 top-4 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 animate-in fade-in slide-in-from-top-0 duration-200'>
+                  <div className='py-1'>
+                    <button
+                      onClick={() => onEdit(task)}
+                      className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200'
                     >
-                      {label}
-                    </Badge>
-                  ))}
+                      Edit Task
+                    </button>
+                    <button
+                      onClick={() => onDelete(task.id)}
+                      className='block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200'
+                    >
+                      Delete Task
+                    </button>
+                  </div>
                 </div>
               )}
-
+            </div>
+            <div className='space-y-3'>
               {/* Title */}
               <h4 className='font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200'>
                 {task.title}
               </h4>
-
-              {/* Description */}
-              {task.description && (
-                <p className='text-sm text-gray-600 line-clamp-2'>
-                  {task.description}
-                </p>
-              )}
-
               {/* Due Date */}
               {task.dueDate && dueDateStatus && (
                 <div
@@ -120,41 +130,6 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
                       className='transition-all duration-200 hover:scale-110'
                     />
                   )}
-
-                  {/* Actions */}
-                  <div className='relative'>
-                    <Button
-                      ref={actionMenuTriggerRef}
-                      variant='ghost'
-                      size='sm'
-                      className='p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowActions(!showActions);
-                      }}
-                    >
-                      <MoreHorizontal className='h-4 w-4' />
-                    </Button>
-
-                    {showActions && (
-                      <div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
-                        <div className='py-1'>
-                          <button
-                            onClick={() => onEdit(task)}
-                            className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200'
-                          >
-                            Edit Task
-                          </button>
-                          <button
-                            onClick={() => onDelete(task.id)}
-                            className='block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200'
-                          >
-                            Delete Task
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
             </div>
@@ -186,10 +161,6 @@ export const CreateTaskModal = ({
   status
 }: CreateTaskModalProps) => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [labels, setLabels] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -199,19 +170,11 @@ export const CreateTaskModal = ({
     try {
       await onSubmit({
         title,
-        description: description || undefined,
-        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
-        labels: labels ? labels.split(',').map((l) => l.trim()) : undefined,
-        assignedTo: assignedTo ? parseInt(assignedTo) : undefined,
         status
       });
 
       // Reset form
       setTitle('');
-      setDescription('');
-      setDueDate('');
-      setLabels('');
-      setAssignedTo('');
       onClose();
     } catch (error) {
       console.error('Error creating task:', error);
@@ -253,40 +216,6 @@ export const CreateTaskModal = ({
             placeholder='e.g., Design user interface, Fix login bug'
             required
             className='text-lg'
-          />
-
-          <Textarea
-            label='Description (Optional)'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder='Describe what needs to be done...'
-            rows={4}
-            className='resize-none'
-          />
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <Input
-              label='Due Date (Optional)'
-              type='datetime-local'
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-            />
-
-            <Input
-              label='Assigned To (User ID - Optional)'
-              type='number'
-              value={assignedTo}
-              onChange={(e) => setAssignedTo(e.target.value)}
-              placeholder='Enter user ID'
-            />
-          </div>
-
-          <Input
-            label='Labels (Optional)'
-            value={labels}
-            onChange={(e) => setLabels(e.target.value)}
-            placeholder='backend, frontend, urgent, bug-fix'
-            helperText='Separate multiple labels with commas'
           />
         </div>
 

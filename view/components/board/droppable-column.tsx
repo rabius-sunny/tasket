@@ -10,9 +10,13 @@ import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element
 import { Button } from '@/components/ui/button';
 import { Task } from '@/types';
 import { Plus } from 'lucide-react';
-import { useBoardContext } from './board-context';
-import { ColumnContext, type ColumnContextProps } from './column-context';
-import { DraggableTaskCard } from './draggable-task-card';
+import { Input } from '../ui/input';
+import { useBoardContext } from './kanban/board-context';
+import {
+  ColumnContext,
+  type ColumnContextProps
+} from './kanban/column-context';
+import { DraggableTaskCard } from './kanban/draggable-task-card';
 
 type State = { type: 'idle' } | { type: 'is-task-over' };
 
@@ -24,6 +28,7 @@ interface DroppableColumnProps {
   title: string;
   tasks: Task[];
   onAddTask: (status: string) => void;
+  onInlineAddTask: (data: { status: string; title: string }) => Promise<void>;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: number) => void;
 }
@@ -34,12 +39,14 @@ export const DroppableColumn = memo(function DroppableColumn({
   tasks,
   onAddTask,
   onEditTask,
-  onDeleteTask
+  onDeleteTask,
+  onInlineAddTask
 }: DroppableColumnProps) {
   const columnRef = useRef<HTMLDivElement | null>(null);
   const columnInnerRef = useRef<HTMLDivElement | null>(null);
   const scrollableRef = useRef<HTMLDivElement | null>(null);
   const [state, setState] = useState<State>(idle);
+  const [isAdding, setIsAdding] = useState(false);
 
   const { instanceId, registerColumn } = useBoardContext();
 
@@ -132,11 +139,7 @@ export const DroppableColumn = memo(function DroppableColumn({
       <div
         data-testid={`column-${columnId}`}
         ref={columnRef}
-        className={`flex flex-col w-80 rounded-2xl border-2 shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-br ${currentStyle.gradient} ${currentStyle.borderColor}`}
-        style={{
-          minHeight: '600px',
-          maxHeight: '80vh'
-        }}
+        className={`flex flex-col text-sm min-w-96 rounded-2xl border-2 shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-br ${currentStyle.gradient} ${currentStyle.borderColor} h-auto max-h-[85vh]`}
       >
         {/* Column Header */}
         <div
@@ -162,49 +165,85 @@ export const DroppableColumn = memo(function DroppableColumn({
 
         {/* Tasks Container */}
         <div
-          ref={columnInnerRef}
-          className={`flex-1 p-3 transition-all duration-200 ${
-            state.type === 'is-task-over'
-              ? `bg-gradient-to-br ${currentStyle.hoverGradient} ring-2 ring-blue-300`
-              : ''
-          }`}
+          style={{ scrollbarWidth: 'thin', msOverflowStyle: 'none' }}
+          className='overflow-y-auto p-3 h-full'
         >
           <div
-            ref={scrollableRef}
-            className='h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent'
-            style={{ minHeight: '500px' }}
+            ref={columnInnerRef}
+            className={`flex-1 h-full transition-all duration-200 ${
+              state.type === 'is-task-over'
+                ? `bg-gradient-to-br ${currentStyle.hoverGradient} ring-2 ring-blue-300`
+                : ''
+            }`}
           >
-            <div className='space-y-3 min-h-full'>
-              {tasks.map((task) => (
-                <DraggableTaskCard
-                  key={task.id}
-                  task={task}
-                  onEdit={onEditTask}
-                  onDelete={onDeleteTask}
-                />
-              ))}
+            <div
+              ref={scrollableRef}
+              className='h-full'
+            >
+              <div className='space-y-3 min-h-full'>
+                {tasks.map((task) => (
+                  <DraggableTaskCard
+                    key={task.id}
+                    task={task}
+                    onEdit={onEditTask}
+                    onDelete={onDeleteTask}
+                  />
+                ))}
 
-              {/* Empty state */}
-              {tasks.length === 0 && (
-                <div className='flex flex-col items-center justify-center h-64 text-gray-500'>
-                  <div className='text-6xl mb-4'>📝</div>
-                  <p className='text-lg font-medium mb-2'>No tasks yet</p>
-                  <p className='text-sm text-center mb-4'>
-                    Drag tasks here or click the + button to add one
-                  </p>
-                  <Button
-                    onClick={() => onAddTask(columnId)}
-                    variant='outline'
-                    size='sm'
-                    className='hover:scale-105 transition-transform duration-200'
-                  >
-                    <Plus className='h-4 w-4 mr-2' />
-                    Add Task
-                  </Button>
-                </div>
-              )}
+                {/* Empty state */}
+                {tasks.length === 0 && (
+                  <div className='flex flex-col items-center justify-center h-64 text-gray-500'>
+                    <div className='text-6xl mb-4'>📝</div>
+                    <p className='text-lg font-medium mb-2'>No tasks yet</p>
+                    <p className='text-sm text-center mb-4'>
+                      Drag tasks here or click the + button to add one
+                    </p>
+                    <Button
+                      onClick={() => onAddTask(columnId)}
+                      variant='outline'
+                      size='sm'
+                      className='hover:scale-105 transition-transform duration-200'
+                    >
+                      <Plus className='h-4 w-4 mr-2' />
+                      Add Task
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        </div>
+        <div className='p-1'>
+          {!isAdding ? (
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={() => setIsAdding(true)}
+            >
+              <Plus className='h-4 w-4 mr-2' />
+              Add Task
+            </Button>
+          ) : (
+            <Input
+              autoFocus
+              className='border border-blue-500 placeholder:font-medium'
+              placeholder='Write title and hit enter.'
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  if (e.currentTarget.value.trim()) {
+                    onInlineAddTask({
+                      status: columnId,
+                      title: e.currentTarget.value
+                    });
+                  }
+                  setIsAdding(false);
+                } else if (e.key === 'Escape') {
+                  setIsAdding(false);
+                }
+              }}
+              onBlur={() => setIsAdding(false)}
+            />
+          )}
         </div>
       </div>
     </ColumnContext.Provider>
