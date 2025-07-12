@@ -63,6 +63,14 @@ export function useTasks(boardId?: number) {
       mutate();
     }, 'deleteTask');
 
+  const updateTaskPositions = async (
+    taskUpdates: Array<{ id: number; position: number; status?: string }>
+  ) =>
+    handleAction(async () => {
+      await requests.patch('/tasks/positions', { tasks: taskUpdates });
+      mutate();
+    }, 'updateTaskPositions');
+
   return {
     tasks: data,
     error,
@@ -70,6 +78,7 @@ export function useTasks(boardId?: number) {
     createTask,
     updateTask,
     deleteTask,
+    updateTaskPositions,
     mutate
   };
 }

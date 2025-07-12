@@ -9,6 +9,17 @@ export class TaskController {
         await c.req.json();
       const boardId = c.req.param('boardId');
 
+      // Get the next position for the status in this board
+      const lastTask = await prisma.task.findFirst({
+        where: {
+          boardId: parseInt(boardId),
+          status: status || 'todo'
+        },
+        orderBy: { position: 'desc' }
+      });
+
+      const nextPosition = (lastTask?.position || 0) + 1;
+
       const task = await prisma.task.create({
         data: {
           title,
@@ -17,7 +28,8 @@ export class TaskController {
           dueDate: dueDate ? new Date(dueDate) : null,
           boardId: parseInt(boardId),
           assignedTo: assignedTo ? parseInt(assignedTo) : null,
-          status: status || 'todo'
+          status: status || 'todo',
+          position: nextPosition
         },
         include: {
           user: {
@@ -104,7 +116,10 @@ export class TaskController {
             assignedTo: assignedTo ? parseInt(assignedTo) : null
           }),
           ...(status && { status }),
-          ...(position !== undefined && { position: parseInt(position) })
+          ...(position !== undefined && {
+            position:
+              typeof position === 'number' ? position : parseInt(position)
+          })
         },
         include: {
           user: {

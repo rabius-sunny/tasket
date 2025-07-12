@@ -18,145 +18,152 @@ import {
   Paperclip,
   Plus
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
   onDelete: (taskId: number) => void;
+  actionMenuTriggerRef?: React.Ref<HTMLButtonElement>;
 }
 
-export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
-  const [showActions, setShowActions] = useState(false);
-  const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null;
+export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
+  function TaskCard({ task, onEdit, onDelete, actionMenuTriggerRef }, ref) {
+    const [showActions, setShowActions] = useState(false);
+    const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null;
 
-  return (
-    <div className='transition-all duration-200 ease-in-out'>
-      <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:scale-105 hover:rotate-1'>
-        <CardContent className='p-4'>
-          <div className='space-y-3'>
-            {/* Labels */}
-            {task.labels && task.labels.length > 0 && (
-              <div className='flex flex-wrap gap-1'>
-                {task.labels.map((label, index) => (
-                  <Badge
-                    key={index}
-                    variant='secondary'
-                    size='sm'
-                    className='transition-all duration-200 hover:scale-110'
-                  >
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-            )}
+    return (
+      <div
+        ref={ref}
+        className='transition-all duration-200 ease-in-out'
+      >
+        <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:scale-105 hover:rotate-1'>
+          <CardContent className='p-4'>
+            <div className='space-y-3'>
+              {/* Labels */}
+              {task.labels && task.labels.length > 0 && (
+                <div className='flex flex-wrap gap-1'>
+                  {task.labels.map((label, index) => (
+                    <Badge
+                      key={index}
+                      variant='secondary'
+                      size='sm'
+                      className='transition-all duration-200 hover:scale-110'
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              )}
 
-            {/* Title */}
-            <h4 className='font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200'>
-              {task.title}
-            </h4>
+              {/* Title */}
+              <h4 className='font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200'>
+                {task.title}
+              </h4>
 
-            {/* Description */}
-            {task.description && (
-              <p className='text-sm text-gray-600 line-clamp-2'>
-                {task.description}
-              </p>
-            )}
+              {/* Description */}
+              {task.description && (
+                <p className='text-sm text-gray-600 line-clamp-2'>
+                  {task.description}
+                </p>
+              )}
 
-            {/* Due Date */}
-            {task.dueDate && dueDateStatus && (
-              <div
-                className={`flex items-center space-x-1 text-xs px-2 py-1 rounded transition-all duration-200 ${dueDateStatus.color}`}
-              >
-                {dueDateStatus.status === 'overdue' ? (
-                  <AlertCircle className='h-3 w-3 animate-pulse' />
-                ) : (
-                  <Clock className='h-3 w-3' />
-                )}
-                <span>{formatDate(task.dueDate)}</span>
-              </div>
-            )}
+              {/* Due Date */}
+              {task.dueDate && dueDateStatus && (
+                <div
+                  className={`flex items-center space-x-1 text-xs px-2 py-1 rounded transition-all duration-200 ${dueDateStatus.color}`}
+                >
+                  {dueDateStatus.status === 'overdue' ? (
+                    <AlertCircle className='h-3 w-3 animate-pulse' />
+                  ) : (
+                    <Clock className='h-3 w-3' />
+                  )}
+                  <span>{formatDate(task.dueDate)}</span>
+                </div>
+              )}
 
-            {/* Footer */}
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center space-x-2'>
-                {/* Attachments */}
-                {task.attachments && task.attachments.length > 0 && (
-                  <div className='flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors duration-200'>
-                    <Paperclip className='h-3 w-3' />
-                    <span className='text-xs'>{task.attachments.length}</span>
-                  </div>
-                )}
+              {/* Footer */}
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center space-x-2'>
+                  {/* Attachments */}
+                  {task.attachments && task.attachments.length > 0 && (
+                    <div className='flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors duration-200'>
+                      <Paperclip className='h-3 w-3' />
+                      <span className='text-xs'>{task.attachments.length}</span>
+                    </div>
+                  )}
 
-                {/* Comments */}
-                {task._count?.comments && task._count.comments > 0 && (
-                  <div className='flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors duration-200'>
-                    <MessageCircle className='h-3 w-3' />
-                    <span className='text-xs'>{task._count.comments}</span>
-                  </div>
-                )}
+                  {/* Comments */}
+                  {task._count?.comments && task._count.comments > 0 && (
+                    <div className='flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors duration-200'>
+                      <MessageCircle className='h-3 w-3' />
+                      <span className='text-xs'>{task._count.comments}</span>
+                    </div>
+                  )}
 
-                {/* Checklists */}
-                {task._count?.checklists && task._count.checklists > 0 && (
-                  <div className='flex items-center space-x-1 text-gray-500 hover:text-purple-600 transition-colors duration-200'>
-                    <CheckSquare className='h-3 w-3' />
-                    <span className='text-xs'>{task._count.checklists}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className='flex items-center space-x-2'>
-                {/* Assigned user */}
-                {task.user && (
-                  <Avatar
-                    fallback={task.user.username}
-                    alt={task.user.username}
-                    size='sm'
-                    className='transition-all duration-200 hover:scale-110'
-                  />
-                )}
-
-                {/* Actions */}
-                <div className='relative'>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowActions(!showActions);
-                    }}
-                  >
-                    <MoreHorizontal className='h-4 w-4' />
-                  </Button>
-
-                  {showActions && (
-                    <div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
-                      <div className='py-1'>
-                        <button
-                          onClick={() => onEdit(task)}
-                          className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200'
-                        >
-                          Edit Task
-                        </button>
-                        <button
-                          onClick={() => onDelete(task.id)}
-                          className='block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200'
-                        >
-                          Delete Task
-                        </button>
-                      </div>
+                  {/* Checklists */}
+                  {task._count?.checklists && task._count.checklists > 0 && (
+                    <div className='flex items-center space-x-1 text-gray-500 hover:text-purple-600 transition-colors duration-200'>
+                      <CheckSquare className='h-3 w-3' />
+                      <span className='text-xs'>{task._count.checklists}</span>
                     </div>
                   )}
                 </div>
+
+                <div className='flex items-center space-x-2'>
+                  {/* Assigned user */}
+                  {task.user && (
+                    <Avatar
+                      fallback={task.user.username}
+                      alt={task.user.username}
+                      size='sm'
+                      className='transition-all duration-200 hover:scale-110'
+                    />
+                  )}
+
+                  {/* Actions */}
+                  <div className='relative'>
+                    <Button
+                      ref={actionMenuTriggerRef}
+                      variant='ghost'
+                      size='sm'
+                      className='p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowActions(!showActions);
+                      }}
+                    >
+                      <MoreHorizontal className='h-4 w-4' />
+                    </Button>
+
+                    {showActions && (
+                      <div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
+                        <div className='py-1'>
+                          <button
+                            onClick={() => onEdit(task)}
+                            className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200'
+                          >
+                            Edit Task
+                          </button>
+                          <button
+                            onClick={() => onDelete(task.id)}
+                            className='block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200'
+                          >
+                            Delete Task
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+);
 
 interface CreateTaskModalProps {
   isOpen: boolean;

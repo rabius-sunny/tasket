@@ -47,6 +47,20 @@ class Network {
     return await response.json();
   }
 
+  public async patch(url: string, body: unknown, options?: RequestInit) {
+    const response = await fetch(API_BASE_URL + url, {
+      ...options,
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.headers || {}),
+        ...Network.getAuthHeader()
+      },
+      body: JSON.stringify(body)
+    });
+    return await response.json();
+  }
+
   public async delete(url: string, options?: RequestInit) {
     const response = await fetch(API_BASE_URL + url, {
       ...options,

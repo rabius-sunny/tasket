@@ -104,13 +104,14 @@ export class WorkspaceService {
 
   // Batch create workspaces
   async createWorkspaces(
-    workspacesData: { name: string; memberIds: number[] }[]
+    workspacesData: { name: string; memberIds: number[]; admin: number }[]
   ) {
     return await prisma.$transaction(
-      workspacesData.map(({ name, memberIds }) =>
+      workspacesData.map(({ name, memberIds, admin }) =>
         prisma.workspace.create({
           data: {
             name,
+            admin,
             members: {
               connect: memberIds.map((id) => ({ id }))
             }
