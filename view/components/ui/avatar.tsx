@@ -1,5 +1,7 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 interface AvatarProps {
   src?: string;
@@ -7,6 +9,16 @@ interface AvatarProps {
   fallback?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+}
+
+export function getRandomColor(seed: string = '') {
+  // Simple seeded hash to get consistent color for same user
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const color = `hsl(${hash % 360}, 70%, 80%)`;
+  return color;
 }
 
 const Avatar = ({
@@ -33,13 +45,20 @@ const Avatar = ({
           .toUpperCase()
       : '');
 
+  // Memoize color so it doesn't change on every render
+  const fallbackColor = useMemo(
+    () => getRandomColor(alt || fallback || ''),
+    [alt, fallback]
+  );
+
   return (
     <div
       className={cn(
-        'relative inline-flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 font-medium ring-2 ring-white bg-gray-300',
+        'relative inline-flex uppercase items-center justify-center rounded-full bg-secondary-100 text-secondary-600 font-medium ring-2 ring-white bg-gray-300',
         sizes[size],
         className
       )}
+      style={!src ? { backgroundColor: fallbackColor } : undefined}
     >
       {src ? (
         <div className='h-full w-full rounded-full overflow-hidden'>

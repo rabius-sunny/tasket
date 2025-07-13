@@ -15,7 +15,6 @@ import {
   Clock,
   MessageCircle,
   MoreHorizontal,
-  Paperclip,
   Plus
 } from 'lucide-react';
 import { forwardRef, useEffect, useState } from 'react';
@@ -37,8 +36,8 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
         ref={ref}
         className='transition-all duration-200 ease-in-out'
       >
-        <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:ring-2 hover:ring-primary'>
-          <CardContent className='p-4'>
+        <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:ring-1 hover:ring-indigo-500'>
+          <CardContent className='p-2 py-1'>
             {/* Actions */}
             <div className='relative flex justify-end'>
               <Button
@@ -55,7 +54,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               </Button>
 
               {showActions && (
-                <div className='absolute right-0 top-4 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 animate-in fade-in slide-in-from-top-0 duration-200'>
+                <div className='absolute right-0 top-5 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 animate-in fade-in slide-in-from-top-0 duration-200'>
                   <div className='py-1'>
                     <button
                       onClick={() => onEdit(task)}
@@ -73,15 +72,15 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
                 </div>
               )}
             </div>
-            <div className='space-y-3'>
+            <div className='space-y-1.5 -mt-4'>
               {/* Title */}
-              <h4 className='font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200'>
+              <h4 className='font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2'>
                 {task.title}
               </h4>
               {/* Due Date */}
               {task.dueDate && dueDateStatus && (
                 <div
-                  className={`flex items-center space-x-1 text-xs px-2 py-1 rounded transition-all duration-200 ${dueDateStatus.color}`}
+                  className={`flex items-center space-x-1 text-xs px-2 py-1 rounded transition-all duration-200 ${dueDateStatus.color} w-fit`}
                 >
                   {dueDateStatus.status === 'overdue' ? (
                     <AlertCircle className='h-3 w-3 animate-pulse' />
@@ -95,26 +94,18 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               {/* Footer */}
               <div className='flex items-center justify-between'>
                 <div className='flex items-center space-x-2'>
-                  {/* Attachments */}
-                  {task.attachments && task.attachments.length > 0 && (
-                    <div className='flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors duration-200'>
-                      <Paperclip className='h-3 w-3' />
-                      <span className='text-xs'>{task.attachments.length}</span>
-                    </div>
-                  )}
-
                   {/* Comments */}
                   {task._count?.comments && task._count.comments > 0 && (
-                    <div className='flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors duration-200'>
-                      <MessageCircle className='h-3 w-3' />
+                    <div className='flex items-center space-x-1 text-green-600 transition-colors duration-200'>
+                      <MessageCircle className='size-4' />
                       <span className='text-xs'>{task._count.comments}</span>
                     </div>
                   )}
 
                   {/* Checklists */}
                   {task._count?.checklists && task._count.checklists > 0 && (
-                    <div className='flex items-center space-x-1 text-gray-500 hover:text-purple-600 transition-colors duration-200'>
-                      <CheckSquare className='h-3 w-3' />
+                    <div className='flex items-center space-x-1 text-purple-600 transition-colors duration-200'>
+                      <CheckSquare className='size-4' />
                       <span className='text-xs'>{task._count.checklists}</span>
                     </div>
                   )}
@@ -124,8 +115,8 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
                   {/* Assigned user */}
                   {task.user && (
                     <Avatar
-                      fallback={task.user.username}
-                      alt={task.user.username}
+                      fallback={task.user.username.slice(0, 1)}
+                      alt='U'
                       size='sm'
                       className='transition-all duration-200 hover:scale-110'
                     />
