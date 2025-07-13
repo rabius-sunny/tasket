@@ -7,6 +7,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  header?: ReactNode;
   title?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -16,6 +17,7 @@ const Modal = ({
   onClose,
   children,
   title,
+  header,
   size = 'md'
 }: ModalProps) => {
   // Lock body scroll when modal is open
@@ -80,7 +82,8 @@ const Modal = ({
               </h3>
             </div>
           )}
-          <div className='px-4 py-3 sm:px-6 text-gray-900 dark:text-gray-100'>
+          {header}
+          <div className='bg-red-200 text-gray-900 dark:text-gray-100'>
             {children}
           </div>
         </div>

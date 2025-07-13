@@ -126,7 +126,7 @@ const DropdownItem = ({
   variant = 'default'
 }: DropdownItemProps) => {
   const baseStyles =
-    'block w-full px-4 py-2 text-sm text-left transition-colors first:rounded-t-lg last:rounded-b-lg';
+    'block w-full px-4 py-2 text-sm text-left transition-colors first:rounded-t-lg last:rounded-b-lg cursor-pointer';
 
   const variants = {
     default:

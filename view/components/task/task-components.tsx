@@ -29,14 +29,14 @@ interface TaskCardProps {
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   function TaskCard({ task, onEdit, onDelete, actionMenuTriggerRef }, ref) {
     const [showActions, setShowActions] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null;
 
     return (
       <div
         ref={ref}
         className='transition-all duration-200 ease-in-out'
-        onClick={() => setIsOpen(true)}
+        onClick={() => setSelectedTask(task)}
       >
         <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:ring-1 hover:ring-indigo-500'>
           <CardContent className='p-2 py-1'>
@@ -125,9 +125,9 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
           </CardContent>
         </Card>
         <TaskDetails
-          task={task}
-          isOpen={isOpen}
-          setIsOpen={() => setIsOpen(false)}
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          isOpen={!!selectedTask}
         />
       </div>
     );
