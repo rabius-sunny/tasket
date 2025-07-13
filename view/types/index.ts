@@ -38,7 +38,7 @@ export interface Task {
   attachments: string[];
   boardId: number;
   assignedTo?: number;
-  user?: User;
+  user?: User[];
   status: string;
   position: number;
   createdAt: string;

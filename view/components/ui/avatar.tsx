@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { ReactNode, useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface AvatarProps {
   src?: string;
@@ -54,7 +54,7 @@ const Avatar = ({
   return (
     <div
       className={cn(
-        'relative inline-flex uppercase items-center justify-center rounded-full bg-secondary-100 text-secondary-600 font-medium ring-2 ring-white bg-gray-300',
+        'flex uppercase items-center justify-center rounded-full bg-secondary-100 text-secondary-600 font-medium ring-2 ring-white bg-gray-300',
         sizes[size],
         className
       )}
@@ -75,24 +75,19 @@ const Avatar = ({
 };
 
 interface AvatarGroupProps {
-  children: ReactNode;
-  max?: number;
+  avatars: AvatarProps[] | undefined;
   className?: string;
 }
 
-const AvatarGroup = ({ children, max = 3, className }: AvatarGroupProps) => {
-  const childrenArray = Array.isArray(children) ? children : [children];
-  const visibleChildren = childrenArray.slice(0, max);
-  const remainingCount = childrenArray.length - max;
-
+const AvatarGroup = ({ avatars, className }: AvatarGroupProps) => {
   return (
-    <div className={cn('flex -space-x-2', className)}>
-      {visibleChildren}
-      {remainingCount > 0 && (
-        <div className='relative inline-flex items-center justify-center h-8 w-8 rounded-full bg-secondary-100 text-secondary-600 text-xs font-medium border-2 border-white'>
-          +{remainingCount}
-        </div>
-      )}
+    <div className={cn('flex -space-x-1.5', className)}>
+      {avatars?.map((props, idx) => (
+        <Avatar
+          key={idx}
+          {...props}
+        />
+      ))}
     </div>
   );
 };

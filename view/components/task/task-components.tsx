@@ -1,7 +1,6 @@
 'use client';
 
-import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { AvatarGroup } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,6 +17,7 @@ import {
   Plus
 } from 'lucide-react';
 import { forwardRef, useEffect, useState } from 'react';
+import TaskDetails from './task-details';
 
 interface TaskCardProps {
   task: Task;
@@ -29,12 +29,14 @@ interface TaskCardProps {
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   function TaskCard({ task, onEdit, onDelete, actionMenuTriggerRef }, ref) {
     const [showActions, setShowActions] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null;
 
     return (
       <div
         ref={ref}
         className='transition-all duration-200 ease-in-out'
+        onClick={() => setIsOpen(true)}
       >
         <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:ring-1 hover:ring-indigo-500'>
           <CardContent className='p-2 py-1'>
@@ -95,37 +97,38 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               <div className='flex items-center justify-between'>
                 <div className='flex items-center space-x-2'>
                   {/* Comments */}
-                  {task._count?.comments && task._count.comments > 0 && (
-                    <div className='flex items-center space-x-1 text-green-600 transition-colors duration-200'>
-                      <MessageCircle className='size-4' />
-                      <span className='text-xs'>{task._count.comments}</span>
-                    </div>
-                  )}
+                  <div className='flex items-center space-x-1 text-green-600 transition-colors duration-200'>
+                    <MessageCircle className='size-4' />
+                    <span className='text-xs'>{task._count?.comments}</span>
+                  </div>
 
                   {/* Checklists */}
-                  {task._count?.checklists && task._count.checklists > 0 && (
-                    <div className='flex items-center space-x-1 text-purple-600 transition-colors duration-200'>
-                      <CheckSquare className='size-4' />
-                      <span className='text-xs'>{task._count.checklists}</span>
-                    </div>
-                  )}
+                  <div className='flex items-center space-x-1 text-purple-600 transition-colors duration-200'>
+                    <CheckSquare className='size-4' />
+                    <span className='text-xs'>{task._count?.checklists}</span>
+                  </div>
                 </div>
 
-                <div className='flex items-center space-x-2'>
+                <div className=''>
                   {/* Assigned user */}
-                  {task.user && (
-                    <Avatar
-                      fallback={task.user.username.slice(0, 1)}
-                      alt='U'
-                      size='sm'
-                      className='transition-all duration-200 hover:scale-110'
-                    />
-                  )}
+
+                  <AvatarGroup
+                    avatars={task?.user?.concat(task?.user).map((user) => ({
+                      alt: user.username,
+                      fallback: user.username.slice(0, 1),
+                      size: 'sm'
+                    }))}
+                  />
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
+        <TaskDetails
+          task={task}
+          isOpen={isOpen}
+          setIsOpen={() => setIsOpen(false)}
+        />
       </div>
     );
   }
@@ -386,146 +389,5 @@ export const EditTaskModal = ({
         </div>
       </form>
     </Modal>
-  );
-};
-
-interface KanbanColumnProps {
-  title: string;
-  status: string;
-  tasks: Task[];
-  onAddTask: (status: string) => void;
-  onEditTask: (task: Task) => void;
-  onDeleteTask: (taskId: number) => void;
-}
-
-export const KanbanColumn = ({
-  title,
-  status,
-  tasks,
-  onAddTask,
-  onEditTask,
-  onDeleteTask
-}: KanbanColumnProps) => {
-  // Column gradient mappings
-  const columnStyles = {
-    todo: {
-      gradient: 'from-gray-100 to-gray-200',
-      headerGradient: 'from-gray-500 to-gray-600',
-      hoverGradient: 'from-gray-200 to-gray-300',
-      borderColor: 'border-gray-300'
-    },
-    'in-progress': {
-      gradient: 'from-blue-100 to-blue-200',
-      headerGradient: 'from-blue-500 to-blue-600',
-      hoverGradient: 'from-blue-200 to-blue-300',
-      borderColor: 'border-blue-300'
-    },
-    review: {
-      gradient: 'from-yellow-100 to-yellow-200',
-      headerGradient: 'from-yellow-500 to-yellow-600',
-      hoverGradient: 'from-yellow-200 to-yellow-300',
-      borderColor: 'border-yellow-300'
-    },
-    completed: {
-      gradient: 'from-green-100 to-green-200',
-      headerGradient: 'from-green-500 to-green-600',
-      hoverGradient: 'from-green-200 to-green-300',
-      borderColor: 'border-green-300'
-    }
-  };
-
-  const styleConfig =
-    columnStyles[status as keyof typeof columnStyles] || columnStyles.todo;
-
-  return (
-    <div
-      className={`
-        bg-gradient-to-b ${styleConfig.gradient} 
-        rounded-2xl p-6 min-h-[600px] w-80 
-        transition-all duration-300 ease-in-out
-        border-2 ${styleConfig.borderColor}
-        shadow-lg hover:shadow-xl
-      `}
-    >
-      {/* Column Header */}
-      <div className='flex items-center justify-between mb-6'>
-        <div className='flex items-center space-x-3'>
-          <div
-            className={`w-4 h-4 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} shadow-md`}
-          />
-          <h3 className='font-bold text-lg text-gray-800'>{title}</h3>
-          <Badge
-            variant='secondary'
-            size='sm'
-            className={`
-              bg-white/70 backdrop-blur text-gray-700 border-white/50
-              transition-all duration-200 hover:scale-110 hover:bg-white/90
-            `}
-          >
-            {tasks.length}
-          </Badge>
-        </div>
-
-        <Button
-          variant='ghost'
-          size='sm'
-          onClick={() => onAddTask(status)}
-          className={`
-            p-2 rounded-xl bg-white/50 hover:bg-white/80 backdrop-blur
-            transition-all duration-200 hover:scale-110 hover:rotate-12
-            shadow-md hover:shadow-lg
-          `}
-        >
-          <Plus className='h-5 w-5 text-gray-700' />
-        </Button>
-      </div>
-
-      {/* Tasks Container */}
-      <div className='space-y-4'>
-        {tasks.map((task, index) => (
-          <div
-            key={task.id}
-            className='animate-in fade-in slide-in-from-top-2 duration-300'
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <TaskCard
-              task={task}
-              onEdit={onEditTask}
-              onDelete={onDeleteTask}
-            />
-          </div>
-        ))}
-
-        {/* Enhanced Drop Zone */}
-
-        {/* Empty State */}
-        {tasks.length === 0 && (
-          <div className='text-center py-12 opacity-50'>
-            <div
-              className={`w-16 h-16 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} flex items-center justify-center mx-auto mb-4 opacity-20`}
-            >
-              <Plus className='h-8 w-8 text-white' />
-            </div>
-            <p className='text-sm text-gray-600'>No tasks yet</p>
-            <p className='text-xs text-gray-500 mt-1'>Add your first task</p>
-          </div>
-        )}
-      </div>
-
-      {/* Column Footer Stats */}
-      <div className='mt-6 pt-4 border-t border-white/30'>
-        <div className='flex items-center justify-between text-xs text-gray-600'>
-          <span>Tasks: {tasks.length}</span>
-          {tasks.length > 0 && (
-            <span className='flex items-center'>
-              <div
-                className={`w-2 h-2 rounded-full bg-gradient-to-r ${styleConfig.headerGradient} mr-1 animate-pulse`}
-              ></div>
-              Active
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
   );
 };
