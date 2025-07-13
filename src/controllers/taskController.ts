@@ -5,7 +5,7 @@ import { taskService } from '../services/taskService';
 export class TaskController {
   async createTask(c: Context) {
     try {
-      const { title, description, labels, dueDate, assignedTo, status } =
+      const { title, description, labels, dueDate, userIds, status } =
         await c.req.json();
       const boardId = c.req.param('boardId');
 
@@ -27,7 +27,12 @@ export class TaskController {
           labels: labels || [],
           dueDate: dueDate ? new Date(dueDate) : null,
           boardId: parseInt(boardId),
-          assignedTo: assignedTo ? parseInt(assignedTo) : null,
+          user: {
+            connect: userIds
+              ? userIds.map((id: any) => ({ id: parseInt(id) }))
+              : []
+          },
+          userIds: userIds ? userIds.map((id: any) => parseInt(id)) : [],
           status: status || 'todo',
           position: nextPosition
         },

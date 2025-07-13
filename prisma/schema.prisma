@@ -42,16 +42,16 @@ model Task {
   boardId     Int
   board       Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
   checklists  Checklist[]
-  assignedTo  Int?
-  user        User?       @relation(fields: [assignedTo], references: [id])
+  user        User[]
+  userIds     Int[]
   status      String      @default("todo") @db.VarChar(50)
   position    Int         @default(0)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([boardId])
-  @@index([assignedTo])
   @@index([dueDate])
+  @@index([userIds])
   @@index([status])
   @@index([boardId, status])
   @@index([boardId, position])

@@ -153,7 +153,9 @@ export class TaskService {
   async getOverdueTasks(userId: number) {
     return await prisma.task.findMany({
       where: {
-        assignedTo: userId,
+        userIds: {
+          has: userId
+        },
         dueDate: {
           lt: new Date()
         },
