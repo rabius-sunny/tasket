@@ -47,7 +47,7 @@ const Modal = ({
     sm: 'max-w-sm',
     md: 'max-w-md',
     lg: 'max-w-lg',
-    xl: 'max-w-xl'
+    xl: 'max-w-[80vw] xl:max-w-[1000px]'
   };
 
   // Render modal in a portal to cover the whole screen
