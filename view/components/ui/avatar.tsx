@@ -21,7 +21,7 @@ const Avatar = ({
   group
 }: AvatarProps) => {
   const sizes = {
-    sm: 'size-6 text-xs',
+    sm: 'size-7 text-xs',
     md: 'h-10 w-10 text-sm',
     lg: 'h-12 w-12 text-base',
     xl: 'h-16 w-16 text-lg'

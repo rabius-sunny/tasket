@@ -2,16 +2,10 @@
 
 import { Task } from '@/types';
 import { formatDate, getDueDateStatus } from '@/utils/date';
-import {
-  AlertCircle,
-  Check,
-  CheckSquare,
-  Clock,
-  MoreHorizontal,
-  Plus
-} from 'lucide-react';
+import { CheckSquare, MoreHorizontal, Plus } from 'lucide-react';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
+import { TransparentInput } from '../ui/transparent-input';
 
 type TProps = {
   items: Task['checklists'];
@@ -25,9 +19,9 @@ export default function TaskCheckLists({ items }: TProps) {
     <div className='mt-6'>
       {items && items.length > 0 && (
         <div>
-          <div className='ml-7 space-y-4'>
+          <div className='space-y-4'>
             {/* Checklist Items */}
-            {items.map((checklist) => {
+            {items.map((checklist, idx) => {
               // Calculate progress for this individual checklist
               const totalItems = checklist.items.length;
 
@@ -40,16 +34,14 @@ export default function TaskCheckLists({ items }: TProps) {
                   : 0;
 
               return (
-                <div
-                  key={checklist.id}
-                  className='space-y-2'
-                >
+                <div key={idx}>
                   <div className='mb-3'>
                     <div className='flex items-center gap-2 mb-2'>
                       <CheckSquare className='h-5 w-5 text-gray-600' />
-                      <h3 className='font-semibold text-gray-800'>
-                        {checklist.title}
-                      </h3>
+                      <TransparentInput
+                        className='font-semibold text-gray-700'
+                        defaultValue={checklist.title}
+                      />
                       {totalItems > 0 && (
                         <div className='flex items-center gap-2 font-medium text-xs'>
                           <span className=' text-gray-500'>
@@ -72,51 +64,46 @@ export default function TaskCheckLists({ items }: TProps) {
                       </div>
                     </div>
                   </div>
-                  <div className='space-y-2'>
-                    {checklist.items.map((item) => (
+                  <div className=''>
+                    {checklist.items.map((item, idxx) => (
                       <div
-                        key={item.id}
-                        className='flex items-center gap-3 p-2 hover:bg-gray-50 rounded group'
+                        key={idxx}
+                        className='flex items-center gap-1.5 p-2 hover:bg-gray-200 rounded group'
                       >
-                        <button className='flex-shrink-0'>
-                          {item.completed ? (
-                            <div className='w-4 h-4 bg-green-500 rounded flex items-center justify-center'>
-                              <Check className='h-3 w-3 text-white' />
-                            </div>
-                          ) : (
-                            <div className='w-4 h-4 border-2 border-gray-300 rounded hover:border-gray-400' />
-                          )}
-                        </button>
-                        <span
+                        <div className='size-6 mt-1'>
+                          <input
+                            type='checkbox'
+                            className='size-5'
+                            defaultChecked={item.completed}
+                            onChange={(e) => {
+                              console.log('status', e.target.checked);
+                            }}
+                          />
+                        </div>
+                        <TransparentInput
                           className={`flex-1 text-sm ${
                             item.completed
                               ? 'line-through text-gray-500'
                               : 'text-gray-700'
                           }`}
-                        >
-                          {item.title}
-                        </span>
+                          defaultValue={item.title}
+                        />
                         {item.dueDate && dueDateStatus(item.dueDate) && (
                           <div
-                            className={`flex items-center space-x-1 text-xs px-2 py-1 rounded transition-all duration-200 ${
+                            className={`flex items-center  text-xs justify-center w-24 py-1 rounded ${
                               dueDateStatus(item?.dueDate)?.color
-                            } w-fit`}
+                            }`}
                           >
-                            {dueDateStatus(item?.dueDate)?.status ===
-                            'overdue' ? (
-                              <AlertCircle className='h-3 w-3 animate-pulse' />
-                            ) : (
-                              <Clock className='h-3 w-3' />
-                            )}
                             <span>{formatDate(item.dueDate)}</span>
                           </div>
                         )}
                         {item.assignedUser && (
-                          <Avatar
-                            fallback={item.assignedUser.username[0]}
-                            alt={item.assignedUser.username}
-                            size='sm'
-                          />
+                          <div className='w-8'>
+                            <Avatar
+                              fallback={item.assignedUser.username[0]}
+                              size='sm'
+                            />
+                          </div>
                         )}
                         <Button
                           variant='ghost'

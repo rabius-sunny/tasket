@@ -3,7 +3,9 @@
 import { useAsync } from '@/lib/hooks';
 import { Task } from '@/types';
 import { formatDate } from '@/utils/date';
+import { cn } from '@/utils/random';
 import {
+  AlertTriangle,
   Calendar,
   CheckSquare,
   ChevronDown,
@@ -34,7 +36,6 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
   const { data: taskData, isLoading: loading } = useAsync<Task>(
     () => task && '/tasks/' + task.id
   );
-  console.log('taskdata', taskData);
 
   if (!task) return null;
   if (loading || !taskData) return <div>Loading...</div>;
@@ -61,9 +62,8 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
       size='xl'
       header={
         <div className='p-2 bg-gray-50 flex items-center justify-between'>
-          <div className='flex items-center'>
+          <div className='flex items-center gap-4'>
             <Dropdown
-              className='w-32'
               trigger={
                 <Button
                   variant='outline'
@@ -75,10 +75,12 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
                 </Button>
               }
             >
-              <DropdownItem>Todo</DropdownItem>
-              <DropdownItem>In Progress</DropdownItem>
-              <DropdownItem>Review</DropdownItem>
-              <DropdownItem>Done</DropdownItem>
+              <div className='w-32'>
+                <DropdownItem>Todo</DropdownItem>
+                <DropdownItem>In Progress</DropdownItem>
+                <DropdownItem>Review</DropdownItem>
+                <DropdownItem>Done</DropdownItem>
+              </div>
             </Dropdown>
             <div className='flex items-center gap-2 text-xs font-medium'>
               <p className=''>
@@ -131,7 +133,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
           </div>
 
           {/* Add to card buttons - horizontally aligned */}
-          <div className='mb-6'>
+          <div className='mb-3'>
             <div className='flex flex-wrap gap-2'>
               <Button
                 variant='ghost'
@@ -176,72 +178,80 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
             </div>
           </div>
 
+          {/* labels */}
+          <div className='flex items-center gap-2 mb-6 flex-wrap'>
+            {taskData.labels && taskData.labels.length > 0
+              ? taskData.labels.map((label, idx) => (
+                  <Badge
+                    size='sm'
+                    key={idx}
+                    className='odd:bg-blue-200 even:bg-green-200 text-black text-xs pt-1 uppercase border-0 font-mono'
+                  >
+                    {label}
+                  </Badge>
+                ))
+              : null}
+          </div>
+
           {/* Members */}
           {task.user && task.user.length > 0 && (
             <div className='mb-6'>
               <h4 className='text-sm font-medium text-gray-600 mb-3'>
                 Members
               </h4>
-              <div className='flex flex-wrap gap-2'>
+              <div className='flex items-center flex-wrap gap-2'>
                 {task.user.map((user, idx) => (
                   <Avatar
                     key={idx}
                     fallback={user.username[0]}
                     alt={user.username}
-                    size='md'
+                    size='sm'
                     className='cursor-pointer hover:opacity-80 transition-opacity'
                   />
                 ))}
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className='size-8 rounded-full p-0 border-dashed'
+                <Dropdown
+                  trigger={
+                    <Button
+                      variant='outline'
+                      title='Add member'
+                      size='sm'
+                      className='size-7 bg-emerald-400 rounded-full p-0 border-dashed'
+                    >
+                      <Plus className='size-4' />
+                    </Button>
+                  }
                 >
-                  <Plus className='size-4' />
-                </Button>
+                  <div className='w-40'>
+                    <DropdownItem>Add Member 1</DropdownItem>
+                    <DropdownItem>Add Member 2</DropdownItem>
+                    <DropdownItem>Add Member 3</DropdownItem>
+                  </div>
+                </Dropdown>
               </div>
             </div>
           )}
 
-          {/* Labels */}
-          {task.labels && task.labels.length > 0 ? (
-            <div className='flex flex-wrap gap-2 mb-6'>
-              {task.labels.map((label, idx) => (
-                <Badge
-                  key={idx}
-                  className='bg-green-500 hover:bg-green-600 text-white cursor-pointer'
-                >
-                  {label}
-                </Badge>
-              ))}
-            </div>
-          ) : null}
-
           {/* Due Date */}
           {task.dueDate && (
             <div className='mb-6'>
-              <h4 className='text-sm font-medium text-gray-600 mb-3'>
-                Due Date
-              </h4>
-              <div className='flex items-center gap-2'>
-                <Badge
-                  className={
-                    new Date(task.dueDate) < new Date()
-                      ? 'bg-red-100 text-red-700 border-red-200'
-                      : 'bg-green-100 text-green-700 border-green-200'
-                  }
-                >
-                  <Calendar className='h-3 w-3 mr-1' />
+              <Badge
+                className={cn(
+                  new Date(task.dueDate) < new Date()
+                    ? 'bg-red-100 text-red-700 border-red-200'
+                    : 'bg-green-100 text-green-700 border-green-200',
+                  'flex items-center gap-2 w-fit'
+                )}
+              >
+                {new Date(task.dueDate) < new Date() ? (
+                  <AlertTriangle className='size-4' />
+                ) : (
+                  <Calendar className='size-4' />
+                )}
+                <span className='font-mono pt-1'>
+                  {' '}
                   {formatDate(task.dueDate)}
-                </Badge>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='h-6 px-2'
-                >
-                  {new Date(task.dueDate) < new Date() ? 'Overdue' : 'Complete'}
-                </Button>
-              </div>
+                </span>
+              </Badge>
             </div>
           )}
 

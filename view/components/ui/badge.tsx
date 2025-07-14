@@ -12,13 +12,15 @@ interface BadgeProps {
     | 'danger';
   size?: 'sm' | 'md';
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const Badge = ({
   children,
   variant = 'default',
   size = 'sm',
-  className
+  className,
+  style
 }: BadgeProps) => {
   const baseStyles = 'inline-flex items-center font-medium rounded-full';
 
@@ -38,7 +40,10 @@ const Badge = ({
   };
 
   return (
-    <span className={cn(baseStyles, variants[variant], sizes[size], className)}>
+    <span
+      style={style}
+      className={cn(baseStyles, variants[variant], sizes[size], className)}
+    >
       {children}
     </span>
   );
