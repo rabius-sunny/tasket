@@ -5,21 +5,31 @@ export class TaskService {
   async getTaskWithRelations(taskId: number) {
     return await prisma.task.findUnique({
       where: { id: taskId },
-      include: {
+      select: {
+        id: true,
+        labels: true,
+        attachments: true,
+        createdAt: true,
+        updatedAt: true,
         checklists: {
-          include: {
+          select: {
+            id: true,
+            title: true,
             items: {
-              include: {
+              select: {
+                id: true,
+                title: true,
+                completed: true,
+                dueDate: true,
+                createdAt: true,
                 assignedUser: {
                   select: {
-                    id: true,
-                    username: true,
-                    email: true
+                    username: true
                   }
                 }
               },
               orderBy: {
-                createdAt: 'asc'
+                createdAt: 'desc'
               }
             }
           },
@@ -28,31 +38,19 @@ export class TaskService {
           }
         },
         comments: {
-          include: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
             author: {
               select: {
                 id: true,
-                username: true,
-                email: true
+                username: true
               }
             }
           },
           orderBy: {
             createdAt: 'desc'
-          }
-        },
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true
-          }
-        },
-        board: {
-          select: {
-            id: true,
-            title: true,
-            workspaceId: true
           }
         }
       }
@@ -107,18 +105,12 @@ export class TaskService {
       select: {
         id: true,
         title: true,
-        description: true,
-        labels: true,
         dueDate: true,
         status: true,
         position: true,
-        createdAt: true,
-        updatedAt: true,
         user: {
           select: {
-            id: true,
-            username: true,
-            email: true
+            username: true
           }
         },
         _count: {
@@ -128,7 +120,7 @@ export class TaskService {
           }
         }
       },
-      orderBy: [{ status: 'asc' }, { position: 'asc' }]
+      orderBy: [{ position: 'asc' }]
     });
   }
 

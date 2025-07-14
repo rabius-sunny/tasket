@@ -9,6 +9,7 @@ interface AvatarProps {
   fallback?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  group?: boolean;
 }
 
 export function getRandomColor(seed: string = '') {
@@ -26,10 +27,11 @@ const Avatar = ({
   alt,
   fallback,
   size = 'md',
-  className
+  className,
+  group
 }: AvatarProps) => {
   const sizes = {
-    sm: 'h-8 w-8 text-sm',
+    sm: 'size-6 text-xs',
     md: 'h-10 w-10 text-sm',
     lg: 'h-12 w-12 text-base',
     xl: 'h-16 w-16 text-lg'
@@ -54,7 +56,8 @@ const Avatar = ({
   return (
     <div
       className={cn(
-        'flex uppercase items-center justify-center rounded-full bg-secondary-100 text-secondary-600 font-medium ring-2 ring-white bg-gray-300',
+        'flex uppercase items-center justify-center rounded-full bg-secondary-100 text-secondary-600 font-medium bg-gray-300',
+        group && 'ring-2 ring-white',
         sizes[size],
         className
       )}
@@ -84,6 +87,7 @@ const AvatarGroup = ({ avatars, className }: AvatarGroupProps) => {
     <div className={cn('flex -space-x-1.5', className)}>
       {avatars?.map((props, idx) => (
         <Avatar
+          group
           key={idx}
           {...props}
         />

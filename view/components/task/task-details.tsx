@@ -1,13 +1,14 @@
+'use client';
+
+import { useAsync } from '@/lib/hooks';
 import { formatDate } from '@/lib/utils';
 import { Task } from '@/types';
 import {
   Calendar,
-  Check,
   CheckSquare,
   ChevronDown,
   CreditCard,
   FileText,
-  MoreHorizontal,
   Paperclip,
   Plus,
   Tag,
@@ -20,6 +21,7 @@ import { Button } from '../ui/button';
 import { Dropdown, DropdownItem } from '../ui/dropdown';
 import { Modal } from '../ui/modal';
 import { TransparentInput, TransparentTextarea } from '../ui/transparent-input';
+import TaskCheckLists from './task-checklists';
 import TaskComments from './task-comments';
 
 type TProps = {
@@ -29,24 +31,13 @@ type TProps = {
 };
 
 export default function TaskDetails({ task, isOpen, onClose }: TProps) {
-  if (!task) return null;
+  const { data: taskData, isLoading: loading } = useAsync<Task>(
+    () => task && '/tasks/' + task.id
+  );
+  console.log('taskdata', taskData);
 
-  // Calculate checklist progress
-  const totalChecklistItems =
-    task.checklists?.reduce(
-      (acc, checklist) => acc + checklist.items.length,
-      0
-    ) || 0;
-  const completedChecklistItems =
-    task.checklists?.reduce(
-      (acc, checklist) =>
-        acc + checklist.items.filter((item) => item.completed).length,
-      0
-    ) || 0;
-  const checklistProgress =
-    totalChecklistItems > 0
-      ? Math.round((completedChecklistItems / totalChecklistItems) * 100)
-      : 0;
+  if (!task) return null;
+  if (loading || !taskData) return <div>Loading...</div>;
 
   const updateTitle = (e: React.FocusEvent<HTMLInputElement>) => {
     const newTitle = e.target.value.trim();
@@ -70,24 +61,41 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
       size='xl'
       header={
         <div className='p-2 bg-gray-50 flex items-center justify-between'>
-          <Dropdown
-            className='w-32'
-            trigger={
-              <Button
-                variant='outline'
-                size='sm'
-                className='capitalize gap-2'
-              >
-                {task.status.replace('-', ' ')}{' '}
-                <ChevronDown className='size-4' />
-              </Button>
-            }
-          >
-            <DropdownItem>Todo</DropdownItem>
-            <DropdownItem>In Progress</DropdownItem>
-            <DropdownItem>Review</DropdownItem>
-            <DropdownItem>Done</DropdownItem>
-          </Dropdown>
+          <div className='flex items-center'>
+            <Dropdown
+              className='w-32'
+              trigger={
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='capitalize gap-2'
+                >
+                  {task.status.replace('-', ' ')}{' '}
+                  <ChevronDown className='size-4' />
+                </Button>
+              }
+            >
+              <DropdownItem>Todo</DropdownItem>
+              <DropdownItem>In Progress</DropdownItem>
+              <DropdownItem>Review</DropdownItem>
+              <DropdownItem>Done</DropdownItem>
+            </Dropdown>
+            <div className='flex items-center gap-2 text-xs font-medium'>
+              <p className=''>
+                Created -{' '}
+                <span className='font-mono'>
+                  {formatDate(taskData.createdAt)}
+                </span>
+              </p>
+              <span className='font-bold text-base'>|</span>
+              <p className=''>
+                Last update -{' '}
+                <span className='font-mono'>
+                  {formatDate(taskData.updatedAt)}
+                </span>
+              </p>
+            </div>
+          </div>
           <Button
             onClick={onClose}
             variant='ghost'
@@ -99,7 +107,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
         </div>
       }
     >
-      <div className='grid grid-cols-5 w-full pt-0! h-[80vh] bg-gray-50'>
+      <div className='grid grid-cols-5 pt-0! h-[80vh] min-w-[900px]  bg-gray-50'>
         <div className='col-span-3 p-4 md:p-6 pt-0! overflow-y-auto'>
           {/* Card Icon and Title */}
           <div className='flex items-center gap-2'>
@@ -175,9 +183,9 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
                 Members
               </h4>
               <div className='flex flex-wrap gap-2'>
-                {task.user.map((user) => (
+                {task.user.map((user, idx) => (
                   <Avatar
-                    key={user.id}
+                    key={idx}
                     fallback={user.username[0]}
                     alt={user.username}
                     size='md'
@@ -252,104 +260,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
           />
 
           {/* Checklists */}
-          {task.checklists && task.checklists.length > 0 && (
-            <div className='mb-6'>
-              <div className='flex items-center gap-2 mb-3'>
-                <CheckSquare className='h-5 w-5 text-gray-600' />
-                <h3 className='font-semibold text-gray-800'>Checklist</h3>
-                {totalChecklistItems > 0 && (
-                  <span className='text-sm text-gray-500'>
-                    {completedChecklistItems}/{totalChecklistItems}
-                  </span>
-                )}
-              </div>
-              <div className='ml-7 space-y-4'>
-                {/* Progress Bar */}
-                {totalChecklistItems > 0 && (
-                  <div className='flex items-center gap-3'>
-                    <span className='text-sm text-gray-600 w-10'>
-                      {checklistProgress}%
-                    </span>
-                    <div className='flex-1 bg-gray-200 rounded-full h-2'>
-                      <div
-                        className='bg-green-500 h-2 rounded-full transition-all duration-300'
-                        style={{ width: `${checklistProgress}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Checklist Items */}
-                {task.checklists.map((checklist) => (
-                  <div
-                    key={checklist.id}
-                    className='space-y-2'
-                  >
-                    <h4 className='font-medium text-gray-700'>
-                      {checklist.title}
-                    </h4>
-                    <div className='space-y-2'>
-                      {checklist.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className='flex items-center gap-3 p-2 hover:bg-gray-50 rounded group'
-                        >
-                          <button className='flex-shrink-0'>
-                            {item.completed ? (
-                              <div className='w-4 h-4 bg-green-500 rounded flex items-center justify-center'>
-                                <Check className='h-3 w-3 text-white' />
-                              </div>
-                            ) : (
-                              <div className='w-4 h-4 border-2 border-gray-300 rounded hover:border-gray-400' />
-                            )}
-                          </button>
-                          <span
-                            className={`flex-1 text-sm ${
-                              item.completed
-                                ? 'line-through text-gray-500'
-                                : 'text-gray-700'
-                            }`}
-                          >
-                            {item.title}
-                          </span>
-                          {item.dueDate && (
-                            <Badge
-                              variant='secondary'
-                              className='text-xs'
-                            >
-                              {formatDate(item.dueDate)}
-                            </Badge>
-                          )}
-                          {item.assignedUser && (
-                            <Avatar
-                              fallback={item.assignedUser.username[0]}
-                              alt={item.assignedUser.username}
-                              size='sm'
-                            />
-                          )}
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            className='opacity-0 group-hover:opacity-100 h-6 w-6 p-0'
-                          >
-                            <MoreHorizontal className='h-3 w-3' />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='text-gray-600 hover:text-gray-800'
-                    >
-                      <Plus className='size-4 mr-1' />
-                      Add an item
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <TaskCheckLists items={taskData.checklists} />
         </div>
 
         {/* Comments section */}

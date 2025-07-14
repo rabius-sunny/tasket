@@ -15,7 +15,7 @@ import {
 } from '@/types';
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 class ApiClient {
   private async request<T>(
@@ -47,14 +47,14 @@ class ApiClient {
 
   // Auth endpoints
   async login(data: LoginData): Promise<{ user: AuthUser; message: string }> {
-    return this.request('/api/auth/login', {
+    return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(data)
     });
   }
 
   async register(data: RegisterData): Promise<AuthUser> {
-    return this.request('/api/auth/register', {
+    return this.request('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data)
     });
@@ -63,16 +63,16 @@ class ApiClient {
   // Workspace endpoints
   async getWorkspaces(userId?: number): Promise<Workspace[]> {
     const params = userId ? `?userId=${userId}` : '';
-    return this.request(`/api/workspaces${params}`);
+    return this.request(`/workspaces${params}`);
   }
 
   async getWorkspace(id: number, includeFullData = false): Promise<Workspace> {
     const query = includeFullData ? '?includeFullData=true' : '';
-    return this.request(`/api/workspaces/${id}${query}`);
+    return this.request(`/workspaces/${id}${query}`);
   }
 
   async createWorkspace(data: CreateWorkspaceData): Promise<Workspace> {
-    return this.request('/api/workspaces', {
+    return this.request('/workspaces', {
       method: 'POST',
       body: JSON.stringify(data)
     });
@@ -82,21 +82,21 @@ class ApiClient {
     id: number,
     data: UpdateWorkspaceData
   ): Promise<Workspace> {
-    return this.request(`/api/workspaces/${id}`, {
+    return this.request(`/workspaces/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
     });
   }
 
   async deleteWorkspace(id: number): Promise<{ message: string }> {
-    return this.request(`/api/workspaces/${id}`, {
+    return this.request(`/workspaces/${id}`, {
       method: 'DELETE'
     });
   }
 
   // Board endpoints
   async getBoards(workspaceId: number): Promise<Board[]> {
-    return this.request(`/api/workspaces/${workspaceId}/boards`);
+    return this.request(`/workspaces/${workspaceId}/boards`);
   }
 
   async getBoard(
@@ -105,16 +105,14 @@ class ApiClient {
     includeTasks = false
   ): Promise<Board> {
     const query = includeTasks ? '?includeTasks=true' : '';
-    return this.request(
-      `/api/workspaces/${workspaceId}/boards/${boardId}${query}`
-    );
+    return this.request(`/workspaces/${workspaceId}/boards/${boardId}${query}`);
   }
 
   async createBoard(
     workspaceId: number,
     data: CreateBoardData
   ): Promise<Board> {
-    return this.request(`/api/workspaces/${workspaceId}/boards`, {
+    return this.request(`/workspaces/${workspaceId}/boards`, {
       method: 'POST',
       body: JSON.stringify(data)
     });
@@ -125,7 +123,7 @@ class ApiClient {
     boardId: number,
     data: UpdateBoardData
   ): Promise<Board> {
-    return this.request(`/api/workspaces/${workspaceId}/boards/${boardId}`, {
+    return this.request(`/workspaces/${workspaceId}/boards/${boardId}`, {
       method: 'PUT',
       body: JSON.stringify(data)
     });
@@ -135,7 +133,7 @@ class ApiClient {
     workspaceId: number,
     boardId: number
   ): Promise<{ message: string }> {
-    return this.request(`/api/workspaces/${workspaceId}/boards/${boardId}`, {
+    return this.request(`/workspaces/${workspaceId}/boards/${boardId}`, {
       method: 'DELETE'
     });
   }
@@ -158,35 +156,35 @@ class ApiClient {
     if (filters?.overdue) params.append('overdue', 'true');
 
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.request(`/api/boards/${boardId}/tasks${query}`);
+    return this.request(`/boards/${boardId}/tasks${query}`);
   }
 
   async getTask(taskId: number): Promise<Task> {
-    return this.request(`/api/tasks/${taskId}`);
+    return this.request(`/tasks/${taskId}`);
   }
 
   async createTask(boardId: number, data: CreateTaskData): Promise<Task> {
-    return this.request(`/api/boards/${boardId}/tasks`, {
+    return this.request(`/boards/${boardId}/tasks`, {
       method: 'POST',
       body: JSON.stringify(data) // Remove boardId as it's in the URL
     });
   }
 
   async updateTask(taskId: number, data: UpdateTaskData): Promise<Task> {
-    return this.request(`/api/tasks/${taskId}`, {
+    return this.request(`/tasks/${taskId}`, {
       method: 'PUT',
       body: JSON.stringify(data)
     });
   }
 
   async deleteTask(taskId: number): Promise<{ message: string }> {
-    return this.request(`/api/tasks/${taskId}`, {
+    return this.request(`/tasks/${taskId}`, {
       method: 'DELETE'
     });
   }
 
   async updateTaskPositions(data: UpdateTaskPositionsData): Promise<void> {
-    return this.request('/api/tasks/positions', {
+    return this.request('/tasks/positions', {
       method: 'PATCH',
       body: JSON.stringify(data)
     });
