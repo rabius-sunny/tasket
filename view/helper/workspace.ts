@@ -1,7 +1,7 @@
 import { useAsync } from '@/lib/hooks';
 import requests from '@/lib/http';
-import { handleAction } from '@/lib/utils';
 import { Workspace } from '@/types';
+import { handleAction } from '@/utils/random';
 
 export function useWorkspaces(userId?: number) {
   const { data, error, isLoading, mutate } = useAsync<Workspace[]>(

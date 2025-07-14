@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/random';
 import { ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 

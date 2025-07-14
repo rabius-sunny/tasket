@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn, getRandomColor } from '@/utils/random';
 import { useMemo } from 'react';
 
 interface AvatarProps {
@@ -10,16 +10,6 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   group?: boolean;
-}
-
-export function getRandomColor(seed: string = '') {
-  // Simple seeded hash to get consistent color for same user
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const color = `hsl(${hash % 360}, 70%, 80%)`;
-  return color;
 }
 
 const Avatar = ({

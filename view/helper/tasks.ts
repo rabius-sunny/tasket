@@ -1,10 +1,10 @@
 import { useAsync } from '@/lib/hooks';
 import requests from '@/lib/http';
-import { handleAction } from '@/lib/utils';
 import { Task } from '@/types';
+import { handleAction } from '@/utils/random';
 import { mutate as globalMutate } from 'swr';
 
-export function useTasks(boardId?: number, taskId?: number) {
+export function useTasks(boardId?: number) {
   const { data, error, isLoading, mutate } = useAsync<Task[]>(
     `/boards/${boardId}/tasks`
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar, AvatarGroup } from '@/components/ui/avatar';
+import { AvatarGroup } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -121,19 +121,17 @@ export const WorkspaceCard = ({ workspace, onSelect }: WorkspaceCardProps) => {
               <div className='flex items-center space-x-2'>
                 <span className='text-sm font-medium text-gray-600'>Team</span>
                 <AvatarGroup
-                  max={4}
                   className='hover:scale-105 transition-transform duration-200'
-                >
-                  {workspace.members?.map((member) => (
-                    <Avatar
-                      key={member.id}
-                      fallback={member.username.charAt(0).toUpperCase()}
-                      alt={member.username}
-                      size='sm'
-                      className='border-2 border-white shadow-sm'
-                    />
-                  ))}
-                </AvatarGroup>
+                  avatars={
+                    workspace.members?.map((member) => ({
+                      key: member.id,
+                      fallback: member.username.charAt(0).toUpperCase(),
+                      alt: member.username,
+                      size: 'sm',
+                      className: 'border-2 border-white shadow-sm'
+                    })) || []
+                  }
+                />
               </div>
 
               {/* Quick action button */}

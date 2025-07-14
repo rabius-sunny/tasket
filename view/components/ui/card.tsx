@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/random';
 import { ReactNode } from 'react';
 
 interface CardProps {

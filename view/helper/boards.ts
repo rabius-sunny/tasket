@@ -1,7 +1,7 @@
 import { useAsync } from '@/lib/hooks';
 import requests from '@/lib/http';
-import { handleAction } from '@/lib/utils';
 import { Board } from '@/types';
+import { handleAction } from '@/utils/random';
 
 export function useBoards(workspaceId?: number, boardId?: number) {
   const {

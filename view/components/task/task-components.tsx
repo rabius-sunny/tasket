@@ -6,8 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 import { Textarea } from '@/components/ui/textarea';
-import { formatDate, getDueDateStatus } from '@/lib/utils';
 import { Task } from '@/types';
+import { formatDate, getDueDateStatus } from '@/utils/date';
 import {
   AlertCircle,
   CheckSquare,

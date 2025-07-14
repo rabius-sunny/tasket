@@ -1,5 +1,5 @@
-import { formatDateTime } from '@/lib/utils';
 import { Task } from '@/types';
+import { formatDateTime } from '@/utils/date';
 import { FileText, MoreHorizontal } from 'lucide-react';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';

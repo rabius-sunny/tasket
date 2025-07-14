@@ -1,8 +1,8 @@
 'use client';
 
 import { useAsync } from '@/lib/hooks';
-import { formatDate } from '@/lib/utils';
 import { Task } from '@/types';
+import { formatDate } from '@/utils/date';
 import {
   Calendar,
   CheckSquare,

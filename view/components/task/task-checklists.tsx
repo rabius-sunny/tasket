@@ -1,7 +1,7 @@
 'use client';
 
-import { formatDate, getDueDateStatus } from '@/lib/utils';
 import { Task } from '@/types';
+import { formatDate, getDueDateStatus } from '@/utils/date';
 import {
   AlertCircle,
   Check,
