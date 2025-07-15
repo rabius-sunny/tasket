@@ -87,7 +87,7 @@ export default function TaskCheckLists({ items }: TProps) {
                         <TransparentInput
                           className={`flex-1 text-sm ${
                             item.completed
-                              ? 'line-through text-gray-500'
+                              ? 'line-through text-gray-500 focus-visible:bg-white focus-visible:text-gray-700 '
                               : 'text-gray-700'
                           }`}
                           defaultValue={item.title}

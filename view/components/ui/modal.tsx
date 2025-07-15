@@ -72,7 +72,7 @@ const Modal = ({
             'bg-white dark:bg-gray-800 rounded-lg shadow-custom-xl sm:my-8 sm:align-middle border border-gray-200 dark:border-gray-700',
             'relative z-modal-content',
             sizeClasses[size],
-            'max-h-[85vh] overflow-y-auto'
+            'max-h-[85vh] overflow-y-hidden overflow-x-auto'
           )}
         >
           {title && (
@@ -83,9 +83,7 @@ const Modal = ({
             </div>
           )}
           {header}
-          <div className='bg-red-200 text-gray-900 dark:text-gray-100'>
-            {children}
-          </div>
+          <div className=' text-gray-900 dark:text-gray-100'>{children}</div>
         </div>
       </div>
     </div>,

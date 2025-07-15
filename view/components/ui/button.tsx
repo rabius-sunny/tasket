@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, forwardRef } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'subtle';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   isLoading?: boolean;
 }
 
@@ -21,7 +21,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex cursor-pointer items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+      'inline-flex cursor-pointer items-center justify-center rounded-lg font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
       primary:
@@ -30,8 +30,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         'bg-secondary-100 text-secondary-800 hover:bg-secondary-200 focus:ring-secondary-500 border border-secondary-200',
       outline:
         'border border-medium bg-white text-primary hover:bg-gray-200/80 focus:ring-primary-500 hover:border-accent',
-      ghost:
-        'text-secondary-700 hover:bg-secondary-100 focus:ring-secondary-500 hover:text-primary',
+      ghost: 'text-secondary-700 hover:bg-gray-300',
       danger:
         'bg-error text-white hover:bg-error-600 focus:ring-error-500 shadow-custom-sm hover:shadow-custom-md',
       subtle:
@@ -39,7 +38,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm',
+      xs: 'px-2 py-1 text-xs',
+      sm: 'px-2.5 py-1.5 text-sm',
       md: 'px-4 py-2 text-sm',
       lg: 'px-6 py-3 text-base'
     };

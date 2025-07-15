@@ -7,14 +7,10 @@ import { cn } from '@/utils/random';
 import {
   AlertTriangle,
   Calendar,
-  CheckSquare,
   ChevronDown,
   CreditCard,
   FileText,
-  Paperclip,
   Plus,
-  Tag,
-  User as UserIcon,
   X
 } from 'lucide-react';
 import { Avatar } from '../ui/avatar';
@@ -23,6 +19,7 @@ import { Button } from '../ui/button';
 import { Dropdown, DropdownItem } from '../ui/dropdown';
 import { Modal } from '../ui/modal';
 import { TransparentInput, TransparentTextarea } from '../ui/transparent-input';
+import CardButton from './card-buttons';
 import TaskCheckLists from './task-checklists';
 import TaskComments from './task-comments';
 
@@ -61,7 +58,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
       onClose={onClose}
       size='xl'
       header={
-        <div className='p-2 bg-gray-50 flex items-center justify-between'>
+        <div className='p-2 relative flex items-center justify-between min-w-[900px] bg-gray-50 border-b border-gray-300'>
           <div className='flex items-center gap-4'>
             <Dropdown
               trigger={
@@ -109,8 +106,8 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
         </div>
       }
     >
-      <div className='grid grid-cols-5 pt-0! h-[80vh] min-w-[900px]  bg-gray-50'>
-        <div className='col-span-3 p-4 md:p-6 pt-0! overflow-y-auto'>
+      <div className='grid grid-cols-5 pt-0! h-[80vh] min-w-[900px] overflow-x-auto bg-gray-50'>
+        <div className='col-span-3 px-4 md:p-6 pt-0! pb-20! overflow-auto'>
           {/* Card Icon and Title */}
           <div className='flex items-center gap-2'>
             <CreditCard className='size-6 text-gray-600' />
@@ -133,50 +130,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
           </div>
 
           {/* Add to card buttons - horizontally aligned */}
-          <div className='mb-3'>
-            <div className='flex flex-wrap gap-2'>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='bg-gray-100 hover:bg-gray-200 text-xs'
-              >
-                <UserIcon className='size-4 mr-2' />
-                Members
-              </Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='bg-gray-100 hover:bg-gray-200 text-xs'
-              >
-                <Tag className='size-4 mr-2' />
-                Labels
-              </Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='bg-gray-100 hover:bg-gray-200 text-xs'
-              >
-                <CheckSquare className='size-4 mr-2' />
-                Checklist
-              </Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='bg-gray-100 hover:bg-gray-200 text-xs'
-              >
-                <Calendar className='size-4 mr-2' />
-                Dates
-              </Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='bg-gray-100 hover:bg-gray-200 text-xs'
-              >
-                <Paperclip className='size-4 mr-2' />
-                Attachment
-              </Button>
-            </div>
-          </div>
+          <CardButton task={{ ...taskData, dueDate: task.dueDate }} />
 
           {/* labels */}
           <div className='flex items-center gap-2 mb-6 flex-wrap'>
@@ -185,7 +139,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
                   <Badge
                     size='sm'
                     key={idx}
-                    className='odd:bg-blue-200 even:bg-green-200 text-black text-xs pt-1 uppercase border-0 font-mono'
+                    className='odd:bg-indigo-500 even:bg-emerald-500 text-white text-xs pt-1 uppercase border-0'
                   >
                     {label}
                   </Badge>
@@ -274,7 +228,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
         </div>
 
         {/* Comments section */}
-        <TaskComments task={task} />
+        <TaskComments task={taskData} />
       </div>
     </Modal>
   );
