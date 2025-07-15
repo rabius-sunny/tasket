@@ -3,8 +3,10 @@
 import { Task } from '@/types';
 import { formatDate, getDueDateStatus } from '@/utils/date';
 import { CheckSquare, MoreHorizontal, Plus } from 'lucide-react';
+import { useState } from 'react';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 import { TransparentInput } from '../ui/transparent-input';
 
 type TProps = {
@@ -14,6 +16,8 @@ type TProps = {
 export default function TaskCheckLists({ items }: TProps) {
   const dueDateStatus = (date: string) =>
     date ? getDueDateStatus(date) : null;
+
+  const [openInputs, setOpenInputs] = useState<{ [key: number]: boolean }>({});
 
   return (
     <div className='mt-6'>
@@ -105,24 +109,47 @@ export default function TaskCheckLists({ items }: TProps) {
                             />
                           </div>
                         )}
-                        <Button
-                          variant='ghost'
-                          size='sm'
-                          className='opacity-0 group-hover:opacity-100 h-6 w-6 p-0'
-                        >
-                          <MoreHorizontal className='h-3 w-3' />
-                        </Button>
+                        <div className='w-7'>
+                          <MoreHorizontal className='opacity-0 group-hover:opacity-100 size-7 p-1 group-hover:bg-white cursor-pointer rounded-full' />
+                        </div>
                       </div>
                     ))}
                   </div>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='text-gray-600 hover:text-gray-800'
-                  >
-                    <Plus className='size-4 mr-1' />
-                    Add an item
-                  </Button>
+                  {!openInputs[idx] ? (
+                    <Button
+                      variant='outline'
+                      onClick={() =>
+                        setOpenInputs((prev) => ({ ...prev, [idx]: true }))
+                      }
+                      size='sm'
+                      className='text-gray-600 px-2 py-1 text-xs mt-2 hover:text-gray-800'
+                    >
+                      <Plus className='size-4 mr-1' />
+                      Add an item
+                    </Button>
+                  ) : (
+                    <Input
+                      autoFocus
+                      defaultValue={checklist.title}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setOpenInputs((prev) => ({ ...prev, [idx]: false }));
+                          if (e.currentTarget.value.trim() !== '') {
+                            alert(e.currentTarget.value);
+                          }
+                        }
+                      }}
+                      type='text'
+                      placeholder='Add title'
+                      className='mt-2 text-sm focus-visible:ring-1! focus:ring-indigo-500!'
+                      onBlur={(e) => {
+                        setOpenInputs((prev) => ({ ...prev, [idx]: false }));
+                        if (e.currentTarget.value.trim() !== '') {
+                          alert(e.currentTarget.value);
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               );
             })}

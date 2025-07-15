@@ -78,8 +78,8 @@ const AvatarGroup = ({ avatars, className }: AvatarGroupProps) => {
       {avatars?.map((props, idx) => (
         <Avatar
           group
-          key={idx}
           {...props}
+          key={idx}
         />
       ))}
     </div>
