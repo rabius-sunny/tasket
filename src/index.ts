@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import authRoutes from './routes/auth';
 import boardsRoutes from './routes/boards';
 import tasksRoutes from './routes/tasks';
+import usersRoutes from './routes/users';
 import workspacesRoutes from './routes/workspaces';
 
 const app = new Hono();
@@ -21,6 +22,7 @@ app.get('/health', (c) =>
 app.route('/api/workspaces', workspacesRoutes);
 app.route('/api', boardsRoutes);
 app.route('/api', tasksRoutes);
+app.route('/api/users', usersRoutes);
 app.route('/api/auth', authRoutes);
 
 // 404 handler

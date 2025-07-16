@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { Dropdown, DropdownItem } from '../ui/dropdown';
+import { Input } from '../ui/input';
 
 type TProps = {
   members: User[];
@@ -43,27 +44,63 @@ export default function WorkspaceMembers({ members }: TProps) {
               Add Member
             </Button>
           </div>
-          <div
-            className='bg-gray-100 p-2 rounded-lg mt-4 w-full overflow-y-auto h-[248px]'
-            id='custom-scrollbar'
-          >
-            {members.map((member, idx) => (
-              <DropdownItem
-                className='flex items-center gap-3 relative cursor-auto group border-b-2 border-gray-200 w-full'
-                key={idx}
+          {type === 'all' ? (
+            <div
+              className='bg-gray-100 p-2 rounded-lg mt-4 w-full overflow-y-auto h-[248px]'
+              id='custom-scrollbar'
+            >
+              {members.map((member, idx) => (
+                <DropdownItem
+                  className='flex items-center gap-3 relative cursor-auto group border-b-2 border-gray-200 w-full'
+                  key={idx}
+                >
+                  <Avatar
+                    fallback={member.username[0]}
+                    size='sm'
+                  />
+                  <div className='flex flex-col -space-y-1'>
+                    <span className='font-medium'>{member.username}</span>
+                    <span className='text-xs text-gray-500'>
+                      {member.email}
+                    </span>
+                  </div>
+                  {/* TODO: handle prevent self removal */}
+                  <XCircle className='text-transparent group-hover:text-red-500 size-5 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer' />
+                </DropdownItem>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <Input
+                className='text-gray-700 py-1 text-sm mt-2'
+                placeholder='search by username or email'
+              />
+              <div
+                className='bg-gray-100 p-2 rounded-lg mt-2 w-full overflow-y-auto h-[218px]'
+                id='custom-scrollbar'
               >
-                <Avatar
-                  fallback={member.username[0]}
-                  size='sm'
-                />
-                <div className='flex flex-col -space-y-1'>
-                  <span className='font-medium'>{member.username}</span>
-                  <span className='text-xs text-gray-500'>{member.email}</span>
-                </div>
-                <XCircle className='text-transparent group-hover:text-red-500 size-5 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer' />
-              </DropdownItem>
-            ))}
-          </div>
+                {members.map((member, idx) => (
+                  <DropdownItem
+                    className='flex items-center gap-3 relative cursor-auto group border-b-2 border-gray-200 w-full'
+                    key={idx}
+                  >
+                    <Avatar
+                      fallback={member.username[0]}
+                      size='sm'
+                    />
+                    <div className='flex flex-col -space-y-1'>
+                      <span className='font-medium'>{member.username}</span>
+                      <span className='text-xs text-gray-500'>
+                        {member.email}
+                      </span>
+                    </div>
+                    {/* TODO: handle prevent self removal */}
+                    <XCircle className='text-transparent group-hover:text-red-500 size-5 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer' />
+                  </DropdownItem>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </Dropdown>
     </div>
