@@ -7,6 +7,7 @@ import {
   Star,
   Users
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -14,12 +15,13 @@ import { Card } from '../ui/card';
 
 interface TProps {
   board: Board;
-  onSelect: (board: Board) => void;
+  workspaceName: string;
 }
 
-export const BoardCard = ({ board, onSelect }: TProps) => {
+export const BoardCard = ({ board, workspaceName }: TProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const taskCount = board._count?.tasks || 0;
+  const { push } = useRouter();
 
   // Generate a beautiful gradient based on the board title
   const gradients = [
@@ -37,7 +39,7 @@ export const BoardCard = ({ board, onSelect }: TProps) => {
   return (
     <div
       className='group cursor-pointer transform transition-all duration-300 hover:scale-105'
-      onClick={() => onSelect(board)}
+      onClick={() => push(`/tasks?board=${board.id}`)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -55,9 +57,7 @@ export const BoardCard = ({ board, onSelect }: TProps) => {
               <h3 className='text-xl font-bold text-white mb-2 leading-tight'>
                 {board.title}
               </h3>
-              <p className='text-white/80 text-sm'>
-                {board.workspace?.name || 'Workspace'}
-              </p>
+              <p className='text-white/80 text-sm'>{workspaceName}</p>
             </div>
 
             <div className='flex items-center gap-2'>

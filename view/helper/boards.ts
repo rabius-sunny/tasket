@@ -1,6 +1,6 @@
 import { useAsync } from '@/lib/hooks';
 import requests from '@/lib/http';
-import { Board } from '@/types';
+import { Board, Workspace } from '@/types';
 import { handleAction } from '@/utils/random';
 
 export function useBoards(workspaceId?: number, boardId?: number) {
@@ -10,9 +10,10 @@ export function useBoards(workspaceId?: number, boardId?: number) {
     isLoading: boardLoading
   } = useAsync<Board>(boardId ? `/boards/${boardId}` : null);
 
-  const { data, error, isLoading, mutate } = useAsync<Board[]>(
-    `/workspaces/${workspaceId}/boards`
-  );
+  const { data, error, isLoading, mutate } = useAsync<{
+    boards: Board[];
+    workspace: Workspace;
+  }>(`/workspaces/${workspaceId}/boards`);
 
   const createBoard = async (boardData: {
     title: string;

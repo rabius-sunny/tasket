@@ -3,14 +3,13 @@
 import BoardList from '@/components/board/board-list';
 import PageLoader from '@/components/ui/page-loader';
 import { useBoards } from '@/helper/boards';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 // Create a separate component for the boards content that uses useSearchParams
 function BoardsContent() {
   const searchParams = useSearchParams();
   const workspaceId = searchParams.get('workspace');
-  const { push } = useRouter();
 
   const { boards, isLoading, error, createBoard, mutate } = useBoards(
     workspaceId ? parseInt(workspaceId) : undefined
@@ -60,11 +59,9 @@ function BoardsContent() {
   return (
     <div className='animate-fade-in-up'>
       <BoardList
-        boards={boards || []}
-        onSelectBoard={(board) => push(`/tasks?board=${board.id}`)}
+        boards={boards.boards || []}
         onCreateBoard={handleCreateBoard}
-        workspaceId={parseInt(workspaceId || '1')}
-        workspaceName={`Workspace ${workspaceId || '1'}`}
+        workspace={boards.workspace}
       />
     </div>
   );

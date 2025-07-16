@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Board } from '@/types';
+import { Board, Workspace } from '@/types';
 import {
   CheckCircle,
   Clock,
@@ -17,18 +17,14 @@ import { CreateBoardModal } from './board-update';
 
 interface TProps {
   boards: Board[];
-  onSelectBoard: (board: Board) => void;
+  workspace: Workspace;
   onCreateBoard: (data: { title: string; workspaceId: number }) => void;
-  workspaceId: number;
-  workspaceName: string;
 }
 
 export default function BoardList({
   boards,
-  onSelectBoard,
-  onCreateBoard,
-  workspaceId,
-  workspaceName
+  workspace,
+  onCreateBoard
 }: TProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -46,7 +42,7 @@ export default function BoardList({
                 </div>
                 <div>
                   <h1 className='text-4xl font-bold tracking-tight'>
-                    {workspaceName}
+                    {workspace.name}
                   </h1>
                   <p className='text-xl text-white/90 mt-1'>
                     Boards & Projects
@@ -170,6 +166,7 @@ export default function BoardList({
                     <Sparkles className='h-5 w-5 text-orange-600' />
                   </div>
                   <div>
+                    {/* TODO: Calculate productivity percentage */}
                     <div className='text-2xl font-bold text-gray-900'>98%</div>
                     <div className='text-sm text-gray-600'>Productivity</div>
                   </div>
@@ -185,9 +182,9 @@ export default function BoardList({
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
                 {boards.map((board) => (
                   <BoardCard
+                    workspaceName={workspace.name}
                     key={board.id}
                     board={board}
-                    onSelect={onSelectBoard}
                   />
                 ))}
               </div>
@@ -200,7 +197,7 @@ export default function BoardList({
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSubmit={onCreateBoard}
-        workspaceId={workspaceId}
+        workspaceId={workspace.id}
       />
     </div>
   );

@@ -37,7 +37,21 @@ export class BoardController {
   async getBoards(workspaceId: number, c: Context) {
     try {
       const boards = await boardService.getBoardsByWorkspace(workspaceId);
-      return c.json(boards);
+      const workspace = await prisma.workspace.findUnique({
+        where: { id: workspaceId },
+        select: {
+          id: true,
+          name: true,
+          members: {
+            select: {
+              id: true,
+              username: true,
+              email: true
+            }
+          }
+        }
+      });
+      return c.json({ boards, workspace });
     } catch (error) {
       console.error('Get boards error:', error);
       return c.json({ error: 'Failed to fetch boards' }, 500);
@@ -75,7 +89,6 @@ export class BoardController {
         });
 
         if (!board) {
-          // if (!board || board.workspaceId !== workspaceId) {
           return c.json({ error: 'Board not found' }, 404);
         }
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/utils/random';
 import { TextareaHTMLAttributes, forwardRef } from 'react';
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/utils/random';
 import { SelectHTMLAttributes, forwardRef } from 'react';
 
