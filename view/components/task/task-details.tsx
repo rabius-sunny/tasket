@@ -148,13 +148,13 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
           </div>
 
           {/* Members */}
-          {task.user && task.user.length > 0 && (
+          {task.assignee && task.assignee.length > 0 && (
             <div className='mb-6'>
               <h4 className='text-sm font-medium text-gray-600 mb-3'>
                 Members
               </h4>
               <div className='flex items-center flex-wrap gap-2'>
-                {task.user.map((user, idx) => (
+                {task.assignee.map((user, idx) => (
                   <Avatar
                     key={idx}
                     fallback={user.username[0]}

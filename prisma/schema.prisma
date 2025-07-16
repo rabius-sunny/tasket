@@ -48,7 +48,7 @@ model Task {
   boardId     Int
   board       Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
   checklists  Checklist[]
-  user        User[]
+  assignee    User[]
   userIds     Int[]
   status      String      @default("todo") @db.VarChar(50)
   position    Int         @default(0)
@@ -76,19 +76,19 @@ model Checklist {
 }
 
 model ChecklistItem {
-  id           Int       @id @default(autoincrement())
-  title        String    @db.VarChar(255)
-  dueDate      DateTime?
-  assignedTo   Int?
-  checklistId  Int
-  checklist    Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
-  assignedUser User?     @relation("ChecklistItemAssignments", fields: [assignedTo], references: [id])
-  completed    Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  dueDate     DateTime?
+  assigneeId  Int?
+  checklistId Int
+  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  assignee    User?     @relation("ChecklistItemAssignments", fields: [assigneeId], references: [id])
+  completed   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([checklistId])
-  @@index([assignedTo])
+  @@index([assigneeId])
   @@index([dueDate])
 }
 
@@ -108,18 +108,18 @@ model Comment {
 }
 
 model User {
-  id                     Int             @id @default(autoincrement())
-  username               String          @unique @db.VarChar(100)
-  email                  String          @unique @db.VarChar(255)
-  password               String          @db.VarChar(255)
-  workspaces             Workspace[]     @relation("WorkspaceMembers")
-  assignedTasks          Task[]
-  assignedChecklistItems ChecklistItem[] @relation("ChecklistItemAssignments")
-  comments               Comment[]       @relation("CommentAuthor")
-  addRequests            AddRequest[]
-  activities             ActivityLog[]
-  createdAt              DateTime        @default(now())
-  updatedAt              DateTime        @updatedAt
+  id             Int             @id @default(autoincrement())
+  username       String          @unique @db.VarChar(100)
+  email          String          @unique @db.VarChar(255)
+  password       String          @db.VarChar(255)
+  workspaces     Workspace[]     @relation("WorkspaceMembers")
+  tasks          Task[]
+  checklistItems ChecklistItem[] @relation("ChecklistItemAssignments")
+  comments       Comment[]       @relation("CommentAuthor")
+  addRequests    AddRequest[]
+  activities     ActivityLog[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@index([email])
   @@index([username])

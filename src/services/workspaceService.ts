@@ -17,7 +17,7 @@ export class WorkspaceService {
                   include: {
                     items: {
                       include: {
-                        assignedUser: {
+                        assignee: {
                           select: {
                             id: true,
                             username: true,
@@ -40,13 +40,6 @@ export class WorkspaceService {
                   },
                   orderBy: {
                     createdAt: 'desc'
-                  }
-                },
-                user: {
-                  select: {
-                    id: true,
-                    username: true,
-                    email: true
                   }
                 }
               },

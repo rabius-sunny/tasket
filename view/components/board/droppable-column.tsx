@@ -30,7 +30,6 @@ interface DroppableColumnProps {
   tasks: Task[];
   onAddTask: (status: string) => void;
   onInlineAddTask: (data: { status: string; title: string }) => Promise<void>;
-  onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: number) => void;
 }
 
@@ -39,7 +38,6 @@ export const DroppableColumn = memo(function DroppableColumn({
   title,
   tasks,
   onAddTask,
-  onEditTask,
   onDeleteTask,
   onInlineAddTask
 }: DroppableColumnProps) {
@@ -160,7 +158,6 @@ export const DroppableColumn = memo(function DroppableColumn({
                   <DraggableTaskCard
                     key={task.id}
                     task={task}
-                    onEdit={onEditTask}
                     onDelete={onDeleteTask}
                   />
                 ))}

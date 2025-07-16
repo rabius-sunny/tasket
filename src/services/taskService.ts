@@ -22,7 +22,7 @@ export class TaskService {
                 completed: true,
                 dueDate: true,
                 createdAt: true,
-                assignedUser: {
+                assignee: {
                   select: {
                     username: true
                   }
@@ -108,7 +108,7 @@ export class TaskService {
         dueDate: true,
         status: true,
         position: true,
-        user: {
+        assignee: {
           select: {
             username: true
           }

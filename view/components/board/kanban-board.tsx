@@ -10,7 +10,7 @@ import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { reorder } from '@atlaskit/pragmatic-drag-and-drop/reorder';
 
-import { CreateTaskModal, EditTaskModal } from '../task/task-components';
+import { CreateTaskModal } from '../task/task-components';
 import BoardHeader from './board-header';
 import { DroppableColumn } from './droppable-column';
 import { BoardContext, type BoardContextValue } from './kanban/board-context';
@@ -36,9 +36,7 @@ export const KanbanBoard = ({
   onUpdateTask
 }: KanbanBoardProps) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [boardData, setBoardData] = useState<Task[]>(board.tasks || []);
 
   const [registry] = useState(createRegistry);
@@ -455,26 +453,10 @@ export const KanbanBoard = ({
     setShowCreateModal(true);
   };
 
-  const handleEditTask = (task: Task) => {
-    setActiveTask(task);
-    setShowEditModal(true);
-  };
-
   const handleCreateTask = async (data: { title: string; status: string }) => {
     await onCreateTask(data);
     setShowCreateModal(false);
     setSelectedStatus('');
-  };
-
-  const handleUpdateTask = async (data: {
-    title?: string;
-    status?: string;
-  }) => {
-    if (activeTask) {
-      await onUpdateTask(activeTask.id, data);
-      setShowEditModal(false);
-      setActiveTask(null);
-    }
   };
 
   const handleDeleteTask = async (taskId: number) => {
@@ -518,7 +500,6 @@ export const KanbanBoard = ({
               tasks={getTasksByStatus(column.status)}
               onAddTask={handleAddTask}
               onInlineAddTask={onCreateTask}
-              onEditTask={handleEditTask}
               onDeleteTask={handleDeleteTask}
             />
           ))}
@@ -535,19 +516,6 @@ export const KanbanBoard = ({
         onSubmit={handleCreateTask}
         status={selectedStatus}
       />
-
-      {/* Edit Task Modal */}
-      {activeTask && (
-        <EditTaskModal
-          isOpen={showEditModal}
-          onClose={() => {
-            setShowEditModal(false);
-            setActiveTask(null);
-          }}
-          onSubmit={handleUpdateTask}
-          task={activeTask}
-        />
-      )}
     </div>
   );
 };

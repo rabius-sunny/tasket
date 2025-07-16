@@ -1,5 +1,5 @@
+import { Board } from '@prisma/client';
 import prisma from '../lib/prisma';
-import { Board, Task, Checklist, ChecklistItem } from '@prisma/client';
 
 export class BoardService {
   // Get board with optimized task loading
@@ -13,7 +13,7 @@ export class BoardService {
               include: {
                 items: {
                   include: {
-                    assignedUser: {
+                    assignee: {
                       select: {
                         id: true,
                         username: true,
@@ -28,13 +28,6 @@ export class BoardService {
               },
               orderBy: {
                 title: 'asc'
-              }
-            },
-            user: {
-              select: {
-                id: true,
-                username: true,
-                email: true
               }
             },
             _count: {

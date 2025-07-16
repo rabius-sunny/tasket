@@ -27,7 +27,7 @@ export class TaskController {
           labels: labels || [],
           dueDate: dueDate ? new Date(dueDate) : null,
           boardId: parseInt(boardId),
-          user: {
+          assignee: {
             connect: userIds
               ? userIds.map((id: any) => ({ id: parseInt(id) }))
               : []
@@ -35,25 +35,10 @@ export class TaskController {
           userIds: userIds ? userIds.map((id: any) => parseInt(id)) : [],
           status: status || 'todo',
           position: nextPosition
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              username: true,
-              email: true
-            }
-          },
-          _count: {
-            select: {
-              checklists: true,
-              comments: true
-            }
-          }
         }
       });
 
-      return c.json(task, 201);
+      return c.json(null, 201);
     } catch (error) {
       console.error('Create task error:', error);
       return c.json({ error: 'Failed to create task' }, 500);
@@ -125,25 +110,10 @@ export class TaskController {
             position:
               typeof position === 'number' ? position : parseInt(position)
           })
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              username: true,
-              email: true
-            }
-          },
-          _count: {
-            select: {
-              checklists: true,
-              comments: true
-            }
-          }
         }
       });
 
-      return c.json(task);
+      return c.json(null, 200);
     } catch (error) {
       console.error('Update task error:', error);
       return c.json({ error: 'Failed to update task' }, 500);
@@ -158,7 +128,7 @@ export class TaskController {
         where: { id: taskId }
       });
 
-      return c.json({ message: 'Task deleted successfully' });
+      return c.json(null, 200);
     } catch (error) {
       console.error('Delete task error:', error);
       return c.json({ error: 'Failed to delete task' }, 500);
@@ -171,7 +141,7 @@ export class TaskController {
 
       await taskService.updateTaskPositions(tasks);
 
-      return c.json({ message: 'Task positions updated successfully' });
+      return c.json(null, 200);
     } catch (error) {
       console.error('Update task positions error:', error);
       return c.json({ error: 'Failed to update task positions' }, 500);

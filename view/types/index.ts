@@ -2,6 +2,15 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  password: string;
+  workspaces?: Workspace[];
+  tasks?: Task[];
+  checklistItems?: ChecklistItem[];
+  comments?: Comment[];
+  addRequests?: AddRequest[];
+  activities?: ActivityLog[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Workspace {
@@ -37,8 +46,7 @@ export interface Task {
   dueDate?: string;
   attachments: string[];
   boardId: number;
-  assignedTo?: number;
-  user?: User[];
+  assignee?: User[];
   status: string;
   position: number;
   createdAt: string;
@@ -62,8 +70,8 @@ export interface ChecklistItem {
   id: number;
   title: string;
   dueDate?: string;
-  assignedTo?: number;
-  assignedUser?: User;
+  assigneeId?: number;
+  assignee?: User;
   checklistId: number;
   completed: boolean;
   createdAt: string;
@@ -78,6 +86,26 @@ export interface Comment {
   author: User;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AddRequest {
+  id: number;
+  workspaceId: number;
+  workspace: Workspace;
+  userId: number;
+  user: User;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActivityLog {
+  id: number;
+  action: string;
+  userId: number;
+  user: User;
+  workspaceId: number;
+  workspace: Workspace;
+  createdAt: string;
 }
 
 export interface CreateTaskData {

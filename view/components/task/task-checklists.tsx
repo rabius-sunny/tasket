@@ -101,10 +101,10 @@ export default function TaskCheckLists({ items }: TProps) {
                             <span>{formatDate(item.dueDate)}</span>
                           </div>
                         )}
-                        {item.assignedUser && (
+                        {item.assignee && (
                           <div className='w-8'>
                             <Avatar
-                              fallback={item.assignedUser.username[0]}
+                              fallback={item.assignee.username[0]}
                               size='sm'
                             />
                           </div>

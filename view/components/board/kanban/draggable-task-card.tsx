@@ -46,7 +46,6 @@ type DraggableTaskCardProps = {
   task: Task;
   state: State;
   actionMenuTriggerRef?: Ref<HTMLButtonElement>;
-  onEdit: (task: Task) => void;
   onDelete: (taskId: number) => void;
 };
 
@@ -54,7 +53,7 @@ const DraggableTaskCardPrimitive = forwardRef<
   HTMLDivElement,
   DraggableTaskCardProps
 >(function DraggableTaskCardPrimitive(
-  { closestEdge, task, state, actionMenuTriggerRef, onEdit, onDelete },
+  { closestEdge, task, state, actionMenuTriggerRef, onDelete },
   ref
 ) {
   return (
@@ -69,7 +68,6 @@ const DraggableTaskCardPrimitive = forwardRef<
     >
       <TaskCard
         task={task}
-        onEdit={onEdit}
         onDelete={onDelete}
         actionMenuTriggerRef={actionMenuTriggerRef}
       />
@@ -113,11 +111,9 @@ const DraggableTaskCardPrimitive = forwardRef<
 
 export const DraggableTaskCard = memo(function DraggableTaskCard({
   task,
-  onEdit,
   onDelete
 }: {
   task: Task;
-  onEdit: (task: Task) => void;
   onDelete: (taskId: number) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -219,7 +215,6 @@ export const DraggableTaskCard = memo(function DraggableTaskCard({
         state={state}
         closestEdge={closestEdge}
         actionMenuTriggerRef={actionMenuTriggerRef}
-        onEdit={onEdit}
         onDelete={onDelete}
       />
       {state.type === 'preview' &&
@@ -235,7 +230,6 @@ export const DraggableTaskCard = memo(function DraggableTaskCard({
               task={task}
               state={state}
               closestEdge={null}
-              onEdit={onEdit}
               onDelete={onDelete}
             />
           </div>,
