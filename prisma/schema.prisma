@@ -11,11 +11,15 @@ datasource db {
 }
 
 model Workspace {
-  id      Int     @id @default(autoincrement())
-  name    String  @db.VarChar(255)
-  members User[]  @relation("WorkspaceMembers")
-  admin   Int
-  boards  Board[]
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  members     User[]        @relation("WorkspaceMembers")
+  admin       Int
+  boards      Board[]
+  addRequests AddRequest[]
+  activities  ActivityLog[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@index([name])
 }
@@ -26,6 +30,8 @@ model Board {
   workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   tasks       Task[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([workspaceId])
   @@index([title])
@@ -58,11 +64,13 @@ model Task {
 }
 
 model Checklist {
-  id     Int             @id @default(autoincrement())
-  title  String          @db.VarChar(255)
-  taskId Int
-  task   Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  items  ChecklistItem[]
+  id        Int             @id @default(autoincrement())
+  title     String          @db.VarChar(255)
+  taskId    Int
+  task      Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  items     ChecklistItem[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
   @@index([taskId])
 }
@@ -108,9 +116,37 @@ model User {
   assignedTasks          Task[]
   assignedChecklistItems ChecklistItem[] @relation("ChecklistItemAssignments")
   comments               Comment[]       @relation("CommentAuthor")
+  addRequests            AddRequest[]
+  activities             ActivityLog[]
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 
   @@index([email])
   @@index([username])
+}
+
+model AddRequest {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+model ActivityLog {
+  id          Int       @id @default(autoincrement())
+  action      String    @db.VarChar(300)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([workspaceId])
 }
