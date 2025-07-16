@@ -536,3 +536,28 @@ body {
 .animate-fade-in-up {
   animation: fade-in-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+#custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+#custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--neutral-200); /* gray */
+}
+#custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary-500); /* blue */
+  border-radius: 3px;
+}
+#custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; /* darker blue on hover */
+}
+
+/* Firefox */
+#custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-500) var(--neutral-200);
+}
+
+/* Standard (future-proof) */
+#custom-scrollbar {
+  scrollbar-gutter: stable;
+}

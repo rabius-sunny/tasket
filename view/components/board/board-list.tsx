@@ -8,12 +8,12 @@ import {
   Layers,
   ListTodo,
   Plus,
-  Sparkles,
-  Users
+  Sparkles
 } from 'lucide-react';
 import { useState } from 'react';
 import { BoardCard } from './board-card';
 import { CreateBoardModal } from './board-update';
+import WorkspaceMembers from './workspace-members';
 
 interface TProps {
   boards: Board[];
@@ -31,7 +31,7 @@ export default function BoardList({
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'>
       {/* Hero Header */}
-      <div className='relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 text-white'>
+      <div className='relative bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 text-white'>
         <div className='absolute inset-0 bg-black/20' />
         <div className='relative max-w-7xl mx-auto px-6 py-16'>
           <div className='flex items-center justify-between'>
@@ -60,10 +60,7 @@ export default function BoardList({
                   <ListTodo className='h-5 w-5' />
                   <span className='font-medium'>{boards.length} Boards</span>
                 </div>
-                <div className='flex items-center gap-2'>
-                  <Users className='h-5 w-5' />
-                  <span className='font-medium'>Team Workspace</span>
-                </div>
+                <WorkspaceMembers members={workspace.members} />
               </div>
             </div>
 
