@@ -56,14 +56,24 @@ export class BoardService {
         id: true,
         title: true,
         workspaceId: true,
+        createdAt: true,
+        updatedAt: true,
         _count: {
           select: {
             tasks: true
           }
+        },
+        tasks: {
+          where: {
+            status: 'completed'
+          },
+          select: {
+            id: true
+          }
         }
       },
       orderBy: {
-        title: 'asc'
+        createdAt: 'desc'
       }
     });
   }

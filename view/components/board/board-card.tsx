@@ -1,15 +1,8 @@
 import { Board } from '@/types';
-import {
-  Clock,
-  ListTodo,
-  MoreHorizontal,
-  Sparkles,
-  Star,
-  Users
-} from 'lucide-react';
+import { formatRelativeTime } from '@/utils/date';
+import { CheckCircle, Clock, MoreHorizontal, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 
@@ -21,6 +14,9 @@ interface TProps {
 export const BoardCard = ({ board, workspaceName }: TProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const taskCount = board._count?.tasks || 0;
+  const completedPercentage =
+    Math.round(((board.tasks.length || 0) / taskCount) * 100) || 0;
+
   const { push } = useRouter();
 
   // Generate a beautiful gradient based on the board title
@@ -91,44 +87,21 @@ export const BoardCard = ({ board, workspaceName }: TProps) => {
 
           {/* Stats */}
           <div className='space-y-4 flex-1'>
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center'>
-                <ListTodo className='h-5 w-5 text-white mx-auto mb-1' />
-                <div className='text-xl font-bold text-white'>{taskCount}</div>
-                <div className='text-xs text-white/80'>Tasks</div>
-              </div>
-
-              <div className='bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center'>
-                <Users className='h-5 w-5 text-white mx-auto mb-1' />
-                <div className='text-xl font-bold text-white'>
-                  {board.workspace ? '3' : '1'}
-                </div>
-                <div className='text-xs text-white/80'>Members</div>
-              </div>
-            </div>
-
             {/* Progress indicator */}
             <div className='bg-white/20 backdrop-blur-sm rounded-lg p-3'>
               <div className='flex items-center justify-between mb-2'>
                 <span className='text-sm text-white/90 font-medium'>
-                  Progress
+                  Progress - {board.tasks.length} / {taskCount}
                 </span>
                 <span className='text-sm text-white/90'>
-                  {taskCount > 0
-                    ? Math.round(((taskCount * 0.6) / taskCount) * 100)
-                    : 0}
-                  %
+                  {completedPercentage}%
                 </span>
               </div>
               <div className='w-full bg-white/20 rounded-full h-2'>
                 <div
                   className='bg-white/90 h-2 rounded-full transition-all duration-300'
                   style={{
-                    width: `${
-                      taskCount > 0
-                        ? Math.round(((taskCount * 0.6) / taskCount) * 100)
-                        : 0
-                    }%`
+                    width: `${completedPercentage}%`
                   }}
                 />
               </div>
@@ -136,21 +109,15 @@ export const BoardCard = ({ board, workspaceName }: TProps) => {
           </div>
 
           {/* Footer */}
-          <div className='flex items-center justify-between pt-4 mt-auto'>
+          <div className='flex items-center justify-between pt-4 text-xs text-white/80'>
             <div className='flex items-center gap-1'>
-              <Clock className='h-4 w-4 text-white/80' />
-              <span className='text-sm text-white/80'>
-                Updated {Math.floor(Math.random() * 5) + 1}h ago
-              </span>
+              <CheckCircle className='size-3 mb-0.5' />
+              <span>Total {taskCount} tasks</span>
             </div>
-
-            <Badge
-              variant='secondary'
-              className='bg-white/20 text-white border-white/30 hover:bg-white/30 transition-colors duration-200'
-            >
-              <Sparkles className='h-3 w-3 mr-1' />
-              Active
-            </Badge>
+            <div className='flex items-center gap-1'>
+              <Clock className='size-3 mb-0.5' />
+              <span>{formatRelativeTime(board.updatedAt)}</span>
+            </div>
           </div>
         </div>
 

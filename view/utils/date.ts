@@ -36,3 +36,20 @@ export function getDueDateStatus(dueDate: string | Date): {
     return { status: 'due-later', color: 'text-green-600 bg-green-50' };
   }
 }
+
+export function formatRelativeTime(date: string | Date): string {
+  const now = new Date();
+  const diffInSeconds = Math.floor(
+    (now.getTime() - new Date(date).getTime()) / 1000
+  );
+
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds} seconds ago`;
+  } else if (diffInSeconds < 3600) {
+    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  } else if (diffInSeconds < 86400) {
+    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  } else {
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  }
+}

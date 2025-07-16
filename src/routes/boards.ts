@@ -19,7 +19,6 @@ boards.get('/workspaces/:workspaceId/boards', async (c) => {
 
 // Get a specific board
 boards.get('/workspaces/:workspaceId/boards/:boardId', async (c) => {
-  const workspaceId = parseInt(c.req.param('workspaceId'));
   const boardId = parseInt(c.req.param('boardId'));
   return boardController.getBoard(boardId, c);
 });

@@ -36,6 +36,8 @@ export interface Board {
   _count?: {
     tasks: number;
   };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Task {
