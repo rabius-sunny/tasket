@@ -1,17 +1,32 @@
+import { useAsync } from '@/lib/hooks';
 import { User } from '@/types';
-import { Plus, Users2, XCircle } from 'lucide-react';
+import { CheckCircle, Plus, Users2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
+import { DebouncedInput } from '../ui/debounced-input';
 import { Dropdown, DropdownItem } from '../ui/dropdown';
 import { Input } from '../ui/input';
+import TinyLoader from '../ui/tiny-loader';
 
 type TProps = {
   members: User[];
+  workspaceId: number;
 };
 
-export default function WorkspaceMembers({ members }: TProps) {
+export default function WorkspaceMembers({ members, workspaceId }: TProps) {
   const [type, setType] = useState<'all' | 'invite'>('all');
+  const [search, setSearch] = useState('');
+
+  const { data, isLoading } = useAsync<User[]>(
+    () =>
+      type === 'invite' &&
+      search &&
+      `/users/invite?workspaceId=${workspaceId}&key=${search}`
+  );
+
+  console.log('data', { data, length: data?.length });
+
   return (
     <div>
       <Dropdown
@@ -71,15 +86,21 @@ export default function WorkspaceMembers({ members }: TProps) {
             </div>
           ) : (
             <div>
-              <Input
-                className='text-gray-700 py-1 text-sm mt-2'
+              <DebouncedInput
+                comp={Input}
+                className='text-gray-700 py-1 text-sm my-3'
                 placeholder='search by username or email'
+                onChange={(value) =>
+                  value.trim().length > 2 && setSearch(value)
+                }
               />
-              <div
-                className='bg-gray-100 p-2 rounded-lg mt-2 w-full overflow-y-auto h-[218px]'
-                id='custom-scrollbar'
-              >
-                {members.map((member, idx) => (
+              {isLoading ? (
+                <TinyLoader
+                  title='members'
+                  className='mt-8'
+                />
+              ) : data?.length > 0 ? (
+                data.map((member, idx) => (
                   <DropdownItem
                     className='flex items-center gap-3 relative cursor-auto group border-b-2 border-gray-200 w-full'
                     key={idx}
@@ -95,10 +116,16 @@ export default function WorkspaceMembers({ members }: TProps) {
                       </span>
                     </div>
                     {/* TODO: handle prevent self removal */}
-                    <XCircle className='text-transparent group-hover:text-red-500 size-5 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer' />
+                    <CheckCircle className='text-transparent group-hover:text-emerald-600 size-5 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer' />
                   </DropdownItem>
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className='text-gray-500 text-sm text-center py-4'>
+                  {search
+                    ? 'No members found'
+                    : 'Start typing to search for members'}
+                </div>
+              )}
             </div>
           )}
         </div>

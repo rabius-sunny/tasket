@@ -54,7 +54,7 @@ export class UserController {
   }
 
   async getUsersForInvite(c: Context) {
-    const workspaceId = parseInt(c.req.param('workspaceId'));
+    const { workspaceId, key } = c.req.query();
 
     if (!workspaceId) {
       return c.json({ error: 'Workspace ID is required' }, 400);
@@ -65,9 +65,13 @@ export class UserController {
         where: {
           workspaces: {
             none: {
-              id: workspaceId
+              id: Number(workspaceId)
             }
-          }
+          },
+          OR: [
+            { username: { contains: key, mode: 'insensitive' } },
+            { email: { contains: key, mode: 'insensitive' } }
+          ]
         },
         select: {
           id: true,

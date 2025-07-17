@@ -60,7 +60,10 @@ export default function BoardList({
                   <ListTodo className='h-5 w-5' />
                   <span className='font-medium'>{boards.length} Boards</span>
                 </div>
-                <WorkspaceMembers members={workspace.members} />
+                <WorkspaceMembers
+                  workspaceId={workspace.id}
+                  members={workspace.members}
+                />
               </div>
             </div>
 

@@ -4,6 +4,6 @@ const usersRouter = new Hono();
 
 const userController = new UserController();
 
-usersRouter.get('/invite/:workspaceId', userController.getUsersForInvite);
+usersRouter.get('/invite', userController.getUsersForInvite);
 
 export default usersRouter;
