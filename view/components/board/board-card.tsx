@@ -35,7 +35,7 @@ export const BoardCard = ({ board, workspaceName }: TProps) => {
   return (
     <div
       className='group cursor-pointer transform transition-all duration-300 hover:scale-105'
-      onClick={() => push(`/tasks?board=${board.id}`)}
+      onClick={() => push(`/dashboard/tasks?board=${board.id}`)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

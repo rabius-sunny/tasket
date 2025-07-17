@@ -34,8 +34,11 @@ import { Box, Grid, Stack, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 
 import { MoreHorizontalIcon } from 'lucide-react';
-import { Avatar } from '../ui/avatar';
+import dynamic from 'next/dynamic';
 import { useBoardContext } from './board-context';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 type State =
   | { type: 'idle' }

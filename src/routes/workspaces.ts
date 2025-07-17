@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
 import { WorkspaceController } from '../controllers/workspaceController';
+import { authenticate } from '../middlewares/auth';
 
 const app = new Hono();
 const workspaceController = new WorkspaceController();
+
+app.use(authenticate);
 
 // Create a new workspace
 app.post('/', async (c) => workspaceController.createWorkspace(c));

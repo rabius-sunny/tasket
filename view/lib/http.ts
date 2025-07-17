@@ -1,9 +1,13 @@
+'use client';
+
+import { getCookie } from '@/utils/cookie';
+
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
 
 class Network {
   private static getAuthHeader() {
-    const token = localStorage.getItem('token');
+    const token = getCookie('token');
     return token ? { Authorization: `Bearer ${token}` } : undefined;
   }
 

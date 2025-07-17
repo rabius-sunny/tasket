@@ -13,7 +13,7 @@ import {
   Plus,
   X
 } from 'lucide-react';
-import { Avatar } from '../ui/avatar';
+import dynamic from 'next/dynamic';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Dropdown, DropdownItem } from '../ui/dropdown';
@@ -22,6 +22,9 @@ import { TransparentInput, TransparentTextarea } from '../ui/transparent-input';
 import CardButton from './card-buttons';
 import TaskCheckLists from './task-checklists';
 import TaskComments from './task-comments';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 type TProps = {
   task: Task | null;

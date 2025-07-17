@@ -1,13 +1,18 @@
+'use client';
+
 import { useAsync } from '@/lib/hooks';
 import { User } from '@/types';
 import { CheckCircle, Plus, Users2, XCircle } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { DebouncedInput } from '../ui/debounced-input';
 import { Dropdown, DropdownItem } from '../ui/dropdown';
 import { Input } from '../ui/input';
 import TinyLoader from '../ui/tiny-loader';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 type TProps = {
   members: User[];
@@ -24,8 +29,6 @@ export default function WorkspaceMembers({ members, workspaceId }: TProps) {
       search &&
       `/users/invite?workspaceId=${workspaceId}&key=${search}`
   );
-
-  console.log('data', { data, length: data?.length });
 
   return (
     <div>

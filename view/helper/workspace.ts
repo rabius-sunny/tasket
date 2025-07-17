@@ -3,10 +3,9 @@ import requests from '@/lib/http';
 import { Workspace } from '@/types';
 import { handleAction } from '@/utils/random';
 
-export function useWorkspaces(userId?: number) {
-  const { data, error, isLoading, mutate } = useAsync<Workspace[]>(
-    userId ? `/workspaces?userId=${userId}` : null
-  );
+export function useWorkspaces() {
+  const { data, error, isLoading, mutate } =
+    useAsync<Workspace[]>(`/workspaces`);
 
   const createWorkspace = (workspaceData: {
     name: string;
@@ -14,8 +13,7 @@ export function useWorkspaces(userId?: number) {
   }) =>
     handleAction(async () => {
       const response = await requests.post('/workspaces', {
-        ...workspaceData,
-        admin: userId
+        ...workspaceData
       });
       mutate();
       return response;

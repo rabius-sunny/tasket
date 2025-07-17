@@ -73,7 +73,7 @@ export default function BoardHeader({
                   </h1>
                   <div className='flex items-center space-x-2'>
                     <Link
-                      href={`/boards?workspace=${board.workspace?.id}`}
+                      href={`/dashboard/boards?workspace=${board.workspace?.id}`}
                       className='text-blue-100 text-lg underline'
                     >
                       {board.workspace?.name}

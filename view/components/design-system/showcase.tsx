@@ -1,9 +1,12 @@
 'use client';
 
-import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import dynamic from 'next/dynamic';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 export const DesignSystemShowcase = () => {
   const colors = [

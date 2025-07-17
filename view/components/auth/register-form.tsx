@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import message from '../ui/message';
 import { useAuth } from './auth-context';
 
 interface RegisterFormProps {
@@ -11,32 +12,21 @@ interface RegisterFormProps {
 }
 
 export const RegisterForm = ({ onToggleMode }: RegisterFormProps) => {
-  const { register } = useAuth();
+  const { authenticate, authLoading } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
+      message.error('Passwords do not match');
       return;
     }
 
-    try {
-      await register(username, email, password);
-    } catch {
-      setError('Registration failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    await authenticate('register', email, password, username);
   };
 
   return (
@@ -56,7 +46,7 @@ export const RegisterForm = ({ onToggleMode }: RegisterFormProps) => {
             type='text'
             label='Username'
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onBlur={(e) => setUsername(e.target.value)}
             placeholder='Enter your username'
             required
           />
@@ -64,7 +54,7 @@ export const RegisterForm = ({ onToggleMode }: RegisterFormProps) => {
             type='email'
             label='Email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onBlur={(e) => setEmail(e.target.value)}
             placeholder='Enter your email'
             required
           />
@@ -72,7 +62,7 @@ export const RegisterForm = ({ onToggleMode }: RegisterFormProps) => {
             type='password'
             label='Password'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onBlur={(e) => setPassword(e.target.value)}
             placeholder='Enter your password'
             required
           />
@@ -80,20 +70,16 @@ export const RegisterForm = ({ onToggleMode }: RegisterFormProps) => {
             type='password'
             label='Confirm Password'
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onBlur={(e) => setConfirmPassword(e.target.value)}
             placeholder='Confirm your password'
             required
           />
 
-          {error && (
-            <div className='text-red-600 text-sm text-center'>{error}</div>
-          )}
-
           <Button
             type='submit'
             className='w-full'
-            isLoading={isLoading}
-            disabled={isLoading}
+            isLoading={authLoading}
+            disabled={authLoading}
           >
             Sign Up
           </Button>

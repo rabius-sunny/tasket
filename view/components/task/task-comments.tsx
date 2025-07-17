@@ -1,10 +1,15 @@
+'use client';
+
 import { Task } from '@/types';
 import { formatDateTime } from '@/utils/date';
 import { Check, FileText, MoreHorizontal, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 type TProps = { task: Task };
 

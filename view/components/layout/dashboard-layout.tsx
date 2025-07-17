@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/components/auth/auth-context';
-import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
@@ -13,9 +12,13 @@ import {
   Users,
   X
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useState } from 'react';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -28,7 +31,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const navigation = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-    { name: 'Workspaces', icon: Users, href: '/workspaces' },
+    { name: 'Workspaces', icon: Users, href: '/dashboard/workspaces' },
     { name: 'Settings', icon: Settings, href: '/settings' }
   ];
 

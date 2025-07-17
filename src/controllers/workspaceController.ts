@@ -40,15 +40,9 @@ export class WorkspaceController {
 
   async getAllWorkspaces(c: Context) {
     try {
-      const userId = c.req.query('userId');
+      const userId = c.get('user');
 
-      if (!userId) {
-        return c.json({ error: 'User ID is required' }, 400);
-      }
-
-      const workspaces = await workspaceService.getWorkspacesList(
-        parseInt(userId)
-      );
+      const workspaces = await workspaceService.getWorkspacesList(1);
       return c.json(workspaces);
     } catch (error) {
       console.error('Get workspaces error:', error);

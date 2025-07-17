@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 export default function WorkspacesPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { workspaces, isLoading, error, createWorkspace, mutate } =
-    useWorkspaces(user?.id);
+    useWorkspaces();
   const { push } = useRouter();
 
   const handleCreateWorkspace = async (data: { name: string }) => {
@@ -59,7 +59,7 @@ export default function WorkspacesPage() {
       <WorkspaceList
         workspaces={workspaces || []}
         onSelectWorkspace={(workspace) =>
-          push(`/boards?workspace=${workspace.id}`)
+          push(`/dashboard/boards?workspace=${workspace.id}`)
         }
         onCreateWorkspace={handleCreateWorkspace}
       />

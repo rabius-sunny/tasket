@@ -1,7 +1,10 @@
 'use client';
 
-import { API_BASE_URL } from '@/lib/api';
+import requests from '@/lib/http';
 import { AuthUser } from '@/types';
+import { deleteCookie, setCookie } from '@/utils/cookie';
+import { decrypt } from '@/utils/string';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   createContext,
   ReactNode,
@@ -9,17 +12,18 @@ import {
   useEffect,
   useState
 } from 'react';
+import message from '../ui/message';
 
 interface AuthContextType {
   user: AuthUser | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (
-    username: string,
+  authenticate: (
+    type: 'login' | 'register',
     email: string,
-    password: string
+    password: string,
+    username?: string
   ) => Promise<void>;
   logout: () => void;
-  isLoading: boolean;
+  authLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,92 +42,67 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const { push } = useRouter();
 
   useEffect(() => {
-    // Check if user is logged in (from localStorage or cookie)
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-    setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Ensure we have the user data with id
-      const userData = {
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
-        ...data.user
-      };
-
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      // Redirect to dashboard after successful login
-      window.location.href = '/dashboard';
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const register = async (
-    username: string,
+  const authenticate = async (
+    type: 'login' | 'register',
     email: string,
-    password: string
+    password: string,
+    username?: string
   ) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
+      setAuthLoading(true);
+      const data = await requests.post(`/auth/${type}`, {
+        email,
+        password,
+        username
       });
 
-      const userData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(userData.error || 'Registration failed');
+      if (!data.token) {
+        throw new Error(data.error || type + ' failed');
       }
 
-      // Ensure we have the user data with id
-      const userWithId = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        ...userData
+      const newUser = {
+        id: data.id,
+        username: data.username,
+        email: data.email
       };
+      setUser(newUser);
+      setCookie('token', data.token, 7);
+      localStorage.setItem('user', JSON.stringify(newUser));
 
-      setUser(userWithId);
-      localStorage.setItem('user', JSON.stringify(userWithId));
+      let redirectTo = '/dashboard/workspace';
 
-      // Redirect to dashboard after successful registration
-      window.location.href = '/dashboard';
-    } catch (error) {
-      throw error;
+      const redirectUrl = searchParams.get('redirect');
+      if (redirectUrl) {
+        const decryptedUrl = await decrypt(redirectUrl);
+        redirectTo = (decryptedUrl as string) || '/dashboard/workspace';
+      }
+
+      push(redirectTo);
+    } catch (error: any) {
+      message.error(error?.message || type + ' failed');
+      setAuthLoading(false);
     }
   };
 
   const logout = () => {
-    setUser(null);
     localStorage.removeItem('user');
+    deleteCookie('token');
+    window.location.reload();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, authenticate, logout, authLoading }}>
       {children}
     </AuthContext.Provider>
   );

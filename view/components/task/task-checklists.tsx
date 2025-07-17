@@ -3,11 +3,14 @@
 import { Task } from '@/types';
 import { formatDate, getDueDateStatus } from '@/utils/date';
 import { CheckSquare, MoreHorizontal, Plus } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { TransparentInput } from '../ui/transparent-input';
+const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
+  ssr: false
+});
 
 type TProps = {
   items: Task['checklists'];

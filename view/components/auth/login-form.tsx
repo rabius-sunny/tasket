@@ -11,24 +11,14 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
-  const { login } = useAuth();
+  const { authenticate, authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
 
-    try {
-      await login(email, password);
-    } catch {
-      setError('Invalid email or password');
-    } finally {
-      setIsLoading(false);
-    }
+    await authenticate('login', email, password);
   };
 
   return (
@@ -61,15 +51,11 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
             required
           />
 
-          {error && (
-            <div className='text-red-600 text-sm text-center'>{error}</div>
-          )}
-
           <Button
             type='submit'
             className='w-full'
-            isLoading={isLoading}
-            disabled={isLoading}
+            isLoading={authLoading}
+            disabled={authLoading}
           >
             Sign In
           </Button>

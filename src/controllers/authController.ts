@@ -1,6 +1,7 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Context } from 'hono';
 import prisma from '../lib/prisma';
+import { generateJwtToken } from '../middlewares/auth';
 
 export class AuthController {
   async register(c: Context) {
@@ -33,7 +34,7 @@ export class AuthController {
         data: {
           username: body.username,
           email: body.email,
-          password: body.password // Consider hashing the password before saving
+          password: body.password // TODO: Consider hashing the password before saving
         },
         select: {
           id: true,
@@ -43,8 +44,10 @@ export class AuthController {
         }
       });
 
-      c.status(201);
-      return c.json(newUser);
+      const { username, email, id } = newUser;
+      const token = await generateJwtToken({ username, email, id });
+
+      return c.json({ username, email, id, token }, 201);
     } catch (error) {
       console.error('Registration error:', error);
 
@@ -90,20 +93,15 @@ export class AuthController {
       });
 
       if (!user || user.password !== password) {
-        // Implement proper password hashing and comparison
+        // TODO Implement proper password hashing and comparison
         c.status(401);
         return c.json({ error: 'Invalid email or password' });
       }
 
-      // Remove password from response
-      const { password: _, ...userWithoutPassword } = user;
+      const { username, email: userEmail, id } = user;
+      const token = await generateJwtToken({ username, email: userEmail, id });
 
-      // Generate a token (e.g., JWT) and send it back
-      c.status(200);
-      return c.json({
-        message: 'Login successful',
-        user: userWithoutPassword
-      });
+      return c.json({ username, email: userEmail, id, token }, 201);
     } catch (error) {
       console.error('Login error:', error);
       c.status(500);
