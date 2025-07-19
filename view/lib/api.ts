@@ -66,11 +66,6 @@ class ApiClient {
     return this.request(`/workspaces${params}`);
   }
 
-  async getWorkspace(id: number, includeFullData = false): Promise<Workspace> {
-    const query = includeFullData ? '?includeFullData=true' : '';
-    return this.request(`/workspaces/${id}${query}`);
-  }
-
   async createWorkspace(data: CreateWorkspaceData): Promise<Workspace> {
     return this.request('/workspaces', {
       method: 'POST',

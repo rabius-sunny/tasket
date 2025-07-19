@@ -8,7 +8,7 @@ import { useWorkspaces } from '@/helper/workspace';
 import { useRouter } from 'next/navigation';
 
 export default function WorkspacesPage() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, authLoading } = useAuth();
   const { workspaces, isLoading, error, createWorkspace, mutate } =
     useWorkspaces();
   const { push } = useRouter();

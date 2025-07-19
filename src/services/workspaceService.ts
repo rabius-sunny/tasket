@@ -1,117 +1,44 @@
-import { Workspace } from '@prisma/client';
 import prisma from '../lib/prisma';
 
 export class WorkspaceService {
-  // Optimized query to get workspace with all related data in one query
-  async getWorkspaceWithFullData(
-    workspaceId: number
-  ): Promise<Workspace | null> {
-    return await prisma.workspace.findUnique({
-      where: { id: workspaceId },
-      include: {
-        boards: {
-          include: {
-            tasks: {
-              include: {
-                checklists: {
-                  include: {
-                    items: {
-                      include: {
-                        assignee: {
-                          select: {
-                            id: true,
-                            username: true,
-                            email: true
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                comments: {
-                  include: {
-                    author: {
-                      select: {
-                        id: true,
-                        username: true,
-                        email: true
-                      }
-                    }
-                  },
-                  orderBy: {
-                    createdAt: 'desc'
-                  }
-                }
-              },
-              orderBy: {
-                position: 'asc'
+  static select = {
+    select: {
+      id: true,
+      name: true,
+      members: {
+        select: {
+          id: true,
+          username: true
+        }
+      },
+      _count: {
+        select: {
+          boards: true,
+          members: true
+        }
+      }
+    }
+  };
+
+  async getWorkspacesList(userId: number, workspaceId?: number) {
+    return workspaceId
+      ? prisma.workspace.findUnique({
+          where: { id: workspaceId, members: { some: { id: userId } } },
+          ...WorkspaceService.select
+        })
+      : prisma.workspace.findMany({
+          where: {
+            members: {
+              some: {
+                id: userId
               }
             }
           },
+          ...WorkspaceService.select,
           orderBy: {
-            title: 'asc'
+            name: 'asc'
           }
-        },
-        members: {
-          select: {
-            id: true,
-            username: true,
-            email: true
-          }
-        }
-      }
-    });
-  }
-
-  // Optimized query for workspace list with minimal data
-  async getWorkspacesList(userId: number) {
-    return await prisma.workspace.findMany({
-      where: {
-        members: {
-          some: {
-            id: userId
-          }
-        }
-      },
-      select: {
-        id: true,
-        name: true,
-        members: {
-          select: {
-            id: true,
-            username: true
-          }
-        },
-        _count: {
-          select: {
-            boards: true,
-            members: true
-          }
-        }
-      },
-      orderBy: {
-        name: 'asc'
-      }
-    });
-  }
-
-  // Batch create workspaces
-  async createWorkspaces(
-    workspacesData: { name: string; memberIds: number[]; admin: number }[]
-  ) {
-    return await prisma.$transaction(
-      workspacesData.map(({ name, memberIds, admin }) =>
-        prisma.workspace.create({
-          data: {
-            name,
-            admin,
-            members: {
-              connect: memberIds.map((id) => ({ id }))
-            }
-          }
-        })
-      )
-    );
+        });
   }
 
   // Optimized search with pagination

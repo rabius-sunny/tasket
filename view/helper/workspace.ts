@@ -21,14 +21,14 @@ export function useWorkspaces() {
 
   const updateWorkspace = (id: number, workspaceData: { name: string }) =>
     handleAction(async () => {
-      const response = await requests.put(`/workspaces/${id}`, workspaceData);
+      const response = await requests.put(`/workspaces`, workspaceData);
       mutate();
       return response;
     }, 'updateWorkspace');
 
   const deleteWorkspace = (id: number) =>
     handleAction(async () => {
-      await requests.delete(`/workspaces/${id}`);
+      await requests.delete(`/workspaces?id=${id}`);
       mutate();
     }, 'deleteWorkspace');
 
