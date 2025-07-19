@@ -15,20 +15,10 @@ boardsRouter.post('/workspaces/:workspaceId/boards', async (c) => {
 });
 
 // Get all boards in a workspace
-boardsRouter.get('/workspaces/:workspaceId/boards', async (c) => {
-  const workspaceId = parseInt(c.req.param('workspaceId'));
-  return boardController.getBoards(workspaceId, c);
-});
-
-// Get a specific board
-boardsRouter.get('/workspaces/:workspaceId/boards/:boardId', async (c) => {
-  const boardId = parseInt(c.req.param('boardId'));
-  return boardController.getBoard(boardId, c);
-});
-
-boardsRouter.get('/boards/:boardId', async (c) => {
-  const boardId = parseInt(c.req.param('boardId'));
-  return boardController.getBoard(boardId, c);
+boardsRouter.get('/', async (c) => {
+  const boardId = Number(c.req.query('id'));
+  const workspaceId = Number(c.req.query('workspaceId'));
+  return boardController.getBoards({ c, boardId, workspaceId });
 });
 
 // Update a board

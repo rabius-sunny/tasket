@@ -2,6 +2,34 @@ import { Board } from '@prisma/client';
 import prisma from '../lib/prisma';
 
 export class BoardService {
+  static select = {
+    select: {
+      id: true,
+      title: true,
+      workspaceId: true,
+      createdAt: true,
+      updatedAt: true,
+      workspace: {
+        select: {
+          members: true
+        }
+      },
+      _count: {
+        select: {
+          tasks: true
+        }
+      },
+      tasks: {
+        where: {
+          status: 'completed'
+        },
+        select: {
+          id: true
+        }
+      }
+    }
+  };
+
   // Get board with optimized task loading
   async getBoardWithTasks(boardId: number): Promise<Board | null> {
     return await prisma.board.findUnique({
@@ -49,33 +77,34 @@ export class BoardService {
   }
 
   // Get boards with task counts (efficient for board listing)
-  async getBoardsByWorkspace(workspaceId: number) {
-    return await prisma.board.findMany({
-      where: { workspaceId },
-      select: {
-        id: true,
-        title: true,
-        workspaceId: true,
-        createdAt: true,
-        updatedAt: true,
-        _count: {
-          select: {
-            tasks: true
-          }
-        },
-        tasks: {
+  async getBoards({
+    userId,
+    workspaceId,
+    boardId
+  }: {
+    userId?: number;
+    workspaceId?: number;
+    boardId?: number;
+  }) {
+    return boardId
+      ? await prisma.board.findUnique({
           where: {
-            status: 'completed'
+            id: boardId,
+            workspace: { members: { some: { id: userId } } }
           },
-          select: {
-            id: true
+          ...BoardService.select
+        })
+      : await prisma.board.findMany({
+          where: {
+            workspace: { members: { some: { id: userId } } },
+            ...(workspaceId && { workspaceId }),
+            ...(boardId && { id: boardId })
+          },
+          ...BoardService.select,
+          orderBy: {
+            createdAt: 'desc'
           }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+        });
   }
 
   // Get board analytics

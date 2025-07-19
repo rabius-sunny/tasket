@@ -94,15 +94,6 @@ class ApiClient {
     return this.request(`/workspaces/${workspaceId}/boards`);
   }
 
-  async getBoard(
-    workspaceId: number,
-    boardId: number,
-    includeTasks = false
-  ): Promise<Board> {
-    const query = includeTasks ? '?includeTasks=true' : '';
-    return this.request(`/workspaces/${workspaceId}/boards/${boardId}${query}`);
-  }
-
   async createBoard(
     workspaceId: number,
     data: CreateBoardData

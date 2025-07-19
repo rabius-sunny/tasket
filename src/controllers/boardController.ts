@@ -34,69 +34,41 @@ export class BoardController {
     }
   }
 
-  async getBoards(workspaceId: number, c: Context) {
+  async getBoards({
+    c,
+    boardId,
+    workspaceId
+  }: {
+    c: Context;
+    boardId?: number;
+    workspaceId?: number;
+  }) {
+    const userId = c.get('user')?.id;
+
     try {
-      const boards = await boardService.getBoardsByWorkspace(workspaceId);
-      const workspace = await prisma.workspace.findUnique({
-        where: { id: workspaceId },
-        select: {
-          id: true,
-          name: true,
-          members: {
-            select: {
-              id: true,
-              username: true,
-              email: true
-            }
-          }
-        }
+      const boards = await boardService.getBoards({
+        userId,
+        workspaceId,
+        boardId
       });
-      return c.json({ boards, workspace });
+      // const workspace = await prisma.workspace.findUnique({
+      //   where: { id: workspaceId },
+      //   select: {
+      //     id: true,
+      //     name: true,
+      //     members: {
+      //       select: {
+      //         id: true,
+      //         username: true,
+      //         email: true
+      //       }
+      //     }
+      //   }
+      // });
+      return c.json({ boards });
     } catch (error) {
       console.error('Get boards error:', error);
       return c.json({ error: 'Failed to fetch boards' }, 500);
-    }
-  }
-
-  async getBoard(boardId: number, c: Context) {
-    try {
-      const includeTasks = c.req.query('includeTasks') === 'true';
-
-      if (includeTasks) {
-        const board = await boardService.getBoardWithTasks(boardId);
-
-        if (!board) {
-          return c.json({ error: 'Board not found' }, 404);
-        }
-
-        return c.json(board);
-      } else {
-        const board = await prisma.board.findUnique({
-          where: { id: boardId },
-          include: {
-            workspace: {
-              select: {
-                id: true,
-                name: true
-              }
-            },
-            _count: {
-              select: {
-                tasks: true
-              }
-            }
-          }
-        });
-
-        if (!board) {
-          return c.json({ error: 'Board not found' }, 404);
-        }
-
-        return c.json(board);
-      }
-    } catch (error) {
-      console.error('Get board error:', error);
-      return c.json({ error: 'Failed to fetch board' }, 500);
     }
   }
 
