@@ -20,8 +20,8 @@ app.get('/health', (c) =>
 
 // API Routes
 app.route('/api/workspaces', workspacesRoutes);
-app.route('/api', boardsRoutes);
-app.route('/api', tasksRoutes);
+app.route('/api/boards', boardsRoutes);
+app.route('/api/tasks', tasksRoutes);
 app.route('/api/users', usersRoutes);
 app.route('/api/auth', authRoutes);
 

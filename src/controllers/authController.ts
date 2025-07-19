@@ -101,7 +101,7 @@ export class AuthController {
       const { username, email: userEmail, id } = user;
       const token = await generateJwtToken({ username, email: userEmail, id });
 
-      return c.json({ username, email: userEmail, id, token }, 201);
+      return c.json({ username, email: userEmail, id, token }, 200);
     } catch (error) {
       console.error('Login error:', error);
       c.status(500);
