@@ -8,10 +8,9 @@ const boardController = new BoardController();
 boardsRouter.use(authenticate);
 
 // Create a new board
-boardsRouter.post('/workspaces/:workspaceId/boards', async (c) => {
-  const workspaceId = parseInt(c.req.param('workspaceId'));
+boardsRouter.post('/', async (c) => {
   const boardData = await c.req.json();
-  return boardController.createBoard(workspaceId, boardData, c);
+  return boardController.createBoard(boardData, c);
 });
 
 // Get all boards in a workspace
@@ -22,22 +21,19 @@ boardsRouter.get('/', async (c) => {
 });
 
 // Update a board
-boardsRouter.put('/workspaces/:workspaceId/boards/:boardId', async (c) => {
-  const workspaceId = parseInt(c.req.param('workspaceId'));
-  const boardId = parseInt(c.req.param('boardId'));
+boardsRouter.put('/', async (c) => {
   const boardData = await c.req.json();
-  return boardController.updateBoard(workspaceId, boardId, boardData, c);
+  return boardController.updateBoard(boardData, c);
 });
 
 // Delete a board
-boardsRouter.delete('/workspaces/:workspaceId/boards/:boardId', async (c) => {
-  const workspaceId = parseInt(c.req.param('workspaceId'));
-  const boardId = parseInt(c.req.param('boardId'));
-  return boardController.deleteBoard(workspaceId, boardId, c);
+boardsRouter.delete('/', async (c) => {
+  const boardId = Number(c.req.query('boardId'));
+  return boardController.deleteBoard(boardId, c);
 });
 
 // Get board analytics
-boardsRouter.get('/boards/:boardId/analytics', async (c) => {
+boardsRouter.get('/analytics', async (c) => {
   return boardController.getBoardAnalytics(c);
 });
 

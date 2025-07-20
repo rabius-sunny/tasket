@@ -9,11 +9,6 @@ export class BoardService {
       workspaceId: true,
       createdAt: true,
       updatedAt: true,
-      workspace: {
-        select: {
-          members: true
-        }
-      },
       _count: {
         select: {
           tasks: true
