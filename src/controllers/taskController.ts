@@ -5,14 +5,33 @@ import { taskService } from '../services/taskService';
 export class TaskController {
   async createTask(c: Context) {
     try {
-      const { title, description, labels, dueDate, userIds, status } =
-        await c.req.json();
-      const boardId = c.req.param('boardId');
+      const {
+        title,
+        description,
+        labels,
+        dueDate,
+        userIds,
+        status,
+        boardId,
+        workspaceId
+      } = await c.req.json();
+
+      // TODO: separate this fetching with caching
+      const workspace = await prisma.workspace.findUnique({
+        where: { id: Number(workspaceId) },
+        select: {
+          members: {
+            select: { id: true }
+          }
+        }
+      });
+
+      if (!workspace) return c.json({ error: 'Workspace not found' }, 404);
 
       // Get the next position for the status in this board
       const lastTask = await prisma.task.findFirst({
         where: {
-          boardId: parseInt(boardId),
+          boardId: Number(boardId),
           status: status || 'todo'
         },
         orderBy: { position: 'desc' }
@@ -20,70 +39,77 @@ export class TaskController {
 
       const nextPosition = (lastTask?.position || 0) + 1;
 
-      const task = await prisma.task.create({
+      await prisma.task.create({
         data: {
           title,
           description,
           labels: labels || [],
           dueDate: dueDate ? new Date(dueDate) : null,
-          boardId: parseInt(boardId),
+          board: {
+            connect: { id: Number(boardId) }
+          },
           assignee: {
             connect: userIds
-              ? userIds.map((id: any) => ({ id: parseInt(id) }))
+              ? userIds.map((id: any) => ({ id: Number(id) }))
               : []
           },
-          userIds: userIds ? userIds.map((id: any) => parseInt(id)) : [],
+          // de-normalize userIds for easier querying
+          userIds: workspace.members
+            ? workspace.members.map((item) => item.id)
+            : [],
           status: status || 'todo',
           position: nextPosition
         }
       });
 
-      return c.json(null, 201);
+      return c.json({ ok: true }, 201);
     } catch (error) {
-      console.error('Create task error:', error);
       return c.json({ error: 'Failed to create task' }, 500);
     }
   }
 
   async getTasks(c: Context) {
+    const userId = c.get('user')?.id;
+
     try {
-      const boardId = parseInt(c.req.param('boardId'));
-      const { status, assignedTo, search, overdue } = c.req.query();
+      const { id, status, assignedTo, search, overdue, boardId } =
+        c.req.query();
+
+      if (!boardId) return c.json({ error: 'Board ID is required' }, 400);
+
+      if (id) {
+        const task = await taskService.getTaskWithRelations(
+          Number(id),
+          Number(boardId),
+          Number(userId)
+        );
+
+        return c.json(task);
+      }
 
       const filters: any = {};
       if (status) filters.status = status;
-      if (assignedTo) filters.assignedTo = parseInt(assignedTo);
+      if (assignedTo) filters.assignedTo = Number(assignedTo);
       if (search) filters.search = search;
       if (overdue === 'true') filters.hasOverdueDate = true;
 
-      const tasks = await taskService.getTasksByBoard(boardId, filters);
+      const tasks = await taskService.getTasksByBoard(
+        Number(boardId),
+        Number(userId),
+        filters
+      );
       return c.json(tasks);
     } catch (error) {
-      console.error('Get tasks error:', error);
       return c.json({ error: 'Failed to fetch tasks' }, 500);
     }
   }
 
-  async getTask(c: Context) {
-    try {
-      const taskId = parseInt(c.req.param('taskId'));
-      const task = await taskService.getTaskWithRelations(taskId);
-
-      if (!task) {
-        return c.json({ error: 'Task not found' }, 404);
-      }
-
-      return c.json(task);
-    } catch (error) {
-      console.error('Get task error:', error);
-      return c.json({ error: 'Failed to fetch task' }, 500);
-    }
-  }
-
   async updateTask(c: Context) {
+    const userId = c.get('user')?.id;
+
     try {
-      const taskId = parseInt(c.req.param('taskId'));
       const {
+        id,
         title,
         description,
         labels,
@@ -93,86 +119,82 @@ export class TaskController {
         position
       } = await c.req.json();
 
-      const task = await prisma.task.update({
-        where: { id: taskId },
+      await prisma.task.update({
+        where: { id, userIds: { has: Number(userId) } },
         data: {
           ...(title && { title }),
-          ...(description !== undefined && { description }),
+          ...(description && { description }),
           ...(labels && { labels }),
-          ...(dueDate !== undefined && {
-            dueDate: dueDate ? new Date(dueDate) : null
+          ...(dueDate && {
+            dueDate: new Date(dueDate)
           }),
-          ...(assignedTo !== undefined && {
-            assignedTo: assignedTo ? parseInt(assignedTo) : null
+          ...(assignedTo && {
+            assignedTo: Number(assignedTo)
           }),
           ...(status && { status }),
           ...(position !== undefined && {
-            position:
-              typeof position === 'number' ? position : parseInt(position)
+            position: typeof position === 'number' ? position : Number(position)
           })
         }
       });
 
-      return c.json(null, 200);
+      return c.json({ ok: true }, 200);
     } catch (error) {
-      console.error('Update task error:', error);
       return c.json({ error: 'Failed to update task' }, 500);
     }
   }
 
   async deleteTask(c: Context) {
+    const userId = c.get('user')?.id;
     try {
-      const taskId = parseInt(c.req.param('taskId'));
+      const taskId = Number(c.req.query('taskId'));
 
       await prisma.task.delete({
-        where: { id: taskId }
+        where: { id: taskId, userIds: { has: Number(userId) } }
       });
 
-      return c.json(null, 200);
+      return c.json({ ok: true }, 200);
     } catch (error) {
-      console.error('Delete task error:', error);
       return c.json({ error: 'Failed to delete task' }, 500);
     }
   }
 
   async updateTaskPositions(c: Context) {
+    const userId = c.get('user')?.id;
     try {
       const { tasks } = await c.req.json();
 
-      await taskService.updateTaskPositions(tasks);
+      await taskService.updateTaskPositions(tasks, Number(userId));
 
-      return c.json(null, 200);
+      return c.json({ ok: true }, 200);
     } catch (error) {
-      console.error('Update task positions error:', error);
       return c.json({ error: 'Failed to update task positions' }, 500);
     }
   }
 
   async getOverdueTasks(c: Context) {
     try {
-      const userId = parseInt(c.req.param('userId'));
+      const userId = Number(c.req.query('userId'));
       const overdueTasks = await taskService.getOverdueTasks(userId);
 
       return c.json(overdueTasks);
     } catch (error) {
-      console.error('Get overdue tasks error:', error);
       return c.json({ error: 'Failed to fetch overdue tasks' }, 500);
     }
   }
 
   async getTaskAnalytics(c: Context) {
     try {
-      const userId = parseInt(c.req.param('userId'));
+      const userId = Number(c.req.query('userId'));
       const workspaceId = c.req.query('workspaceId');
 
       const analytics = await taskService.getTaskAnalytics(
         userId,
-        workspaceId ? parseInt(workspaceId) : undefined
+        workspaceId ? Number(workspaceId) : undefined
       );
 
       return c.json(analytics);
     } catch (error) {
-      console.error('Get task analytics error:', error);
       return c.json({ error: 'Failed to fetch task analytics' }, 500);
     }
   }

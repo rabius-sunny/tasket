@@ -2,9 +2,9 @@ import prisma from '../lib/prisma';
 
 export class TaskService {
   // Get task with all relations in a single query
-  async getTaskWithRelations(taskId: number) {
+  async getTaskWithRelations(id: number, boardId: number, userId: number) {
     return await prisma.task.findUnique({
-      where: { id: taskId },
+      where: { id, boardId, userIds: { has: userId } },
       select: {
         id: true,
         labels: true,
@@ -60,6 +60,7 @@ export class TaskService {
   // Get tasks by board with optimized queries
   async getTasksByBoard(
     boardId: number,
+    userId: number,
     filters?: {
       status?: string;
       assignedTo?: number;
@@ -67,7 +68,7 @@ export class TaskService {
       search?: string;
     }
   ) {
-    const where: any = { boardId };
+    const where: any = { boardId, userIds: { has: userId } };
 
     if (filters?.status) {
       where.status = filters.status;
@@ -126,12 +127,13 @@ export class TaskService {
 
   // Batch update task positions (for drag and drop)
   async updateTaskPositions(
-    taskUpdates: { id: number; position: number; status?: string }[]
+    taskUpdates: { id: number; position: number; status?: string }[],
+    userId: number
   ) {
     return await prisma.$transaction(
       taskUpdates.map(({ id, position, status }) =>
         prisma.task.update({
-          where: { id },
+          where: { id, userIds: { has: userId } },
           data: {
             position,
             ...(status && { status })
@@ -177,30 +179,6 @@ export class TaskService {
         dueDate: 'asc'
       }
     });
-  }
-
-  // Bulk create tasks
-  async createTasks(
-    tasksData: Array<{
-      title: string;
-      description?: string;
-      labels?: string[];
-      dueDate?: Date;
-      boardId: number;
-      assignedTo?: number;
-      status?: string;
-    }>
-  ) {
-    return await prisma.$transaction(
-      tasksData.map((taskData, index) =>
-        prisma.task.create({
-          data: {
-            ...taskData,
-            position: index
-          }
-        })
-      )
-    );
   }
 
   // Get task analytics for dashboard
