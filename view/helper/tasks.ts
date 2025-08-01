@@ -6,7 +6,7 @@ import { mutate as globalMutate } from 'swr';
 
 export function useTasks(boardId?: number) {
   const { data, error, isLoading, mutate } = useAsync<Task[]>(
-    `/boards/${boardId}/tasks`
+    `/tasks?boardId=${boardId}`
   );
 
   const createTask = async (taskData: {
@@ -19,19 +19,16 @@ export function useTasks(boardId?: number) {
     boardId: number;
   }) =>
     handleAction(async () => {
-      const { boardId, ...requestData } = taskData;
       const formattedData = {
-        title: requestData.title,
-        description: requestData.description,
-        labels: requestData.labels || [],
-        dueDate: requestData.dueDate,
-        assignedTo: requestData.assignedTo,
-        status: requestData.status
+        title: taskData.title,
+        description: taskData.description,
+        labels: taskData.labels || [],
+        dueDate: taskData.dueDate,
+        assignedTo: taskData.assignedTo,
+        status: taskData.status,
+        boardId: taskData.boardId
       };
-      const response = await requests.post(
-        `/boards/${boardId}/tasks`,
-        formattedData
-      );
+      const response = await requests.post(`/tasks`, formattedData);
       mutate();
       return response;
     }, 'createTask');

@@ -3,8 +3,9 @@ import prisma from '../lib/prisma';
 import { boardService } from '../services/boardService';
 
 export class BoardController {
-  async createBoard(boardData: any, c: Context) {
+  async createBoard(c: Context) {
     const userId = c.get('user')?.id;
+    const boardData = await c.req.json();
     try {
       const { title, workspaceId } = boardData;
 

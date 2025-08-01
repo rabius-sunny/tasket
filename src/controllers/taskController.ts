@@ -5,20 +5,12 @@ import { taskService } from '../services/taskService';
 export class TaskController {
   async createTask(c: Context) {
     try {
-      const {
-        title,
-        description,
-        labels,
-        dueDate,
-        userIds,
-        status,
-        boardId,
-        workspaceId
-      } = await c.req.json();
+      const { title, description, labels, dueDate, userIds, status, boardId } =
+        await c.req.json();
 
       // TODO: separate this fetching with caching
-      const workspace = await prisma.workspace.findUnique({
-        where: { id: Number(workspaceId) },
+      const workspace = await prisma.workspace.findFirst({
+        where: { boards: { some: { id: Number(boardId) } } },
         select: {
           members: {
             select: { id: true }
@@ -64,6 +56,7 @@ export class TaskController {
 
       return c.json({ ok: true }, 201);
     } catch (error) {
+      console.error('Error creating task:', error);
       return c.json({ error: 'Failed to create task' }, 500);
     }
   }

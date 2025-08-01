@@ -1,44 +1,29 @@
 import { useAsync } from '@/lib/hooks';
 import requests from '@/lib/http';
-import { Board, Workspace } from '@/types';
 import { handleAction } from '@/utils/random';
 
-export function useBoards(workspaceId?: number, boardId?: number) {
-  const {
-    data: board,
-    error: boardError,
-    isLoading: boardLoading
-  } = useAsync<Board>(boardId ? `/boards/${boardId}` : null);
-
-  const { data, error, isLoading, mutate } = useAsync<{
-    boards: Board[];
-    workspace: Workspace;
-  }>(`/workspaces/${workspaceId}/boards`);
+export function useBoards<T = any>(workspaceId?: number, boardId?: number) {
+  const { data, error, isLoading, mutate } = useAsync<T>(
+    `/boards?id=${boardId}&workspaceId=${workspaceId}`
+  );
 
   const createBoard = async (boardData: {
     title: string;
     workspaceId: number;
   }) =>
     handleAction(async () => {
-      const response = await requests.post(
-        `/workspaces/${boardData.workspaceId}/boards`,
-        { title: boardData.title }
-      );
+      const response = await requests.post(`/boards`, {
+        title: boardData.title,
+        workspaceId: boardData.workspaceId
+      });
 
       mutate();
       return response;
     }, 'createBoard');
 
-  const updateBoard = async (
-    id: number,
-    workspaceId: number,
-    boardData: { title: string }
-  ) =>
+  const updateBoard = async (boardData: { id: string; title: string }) =>
     handleAction(async () => {
-      const response = await requests.put(
-        `/workspaces/${workspaceId}/boards/${id}`,
-        boardData
-      );
+      const response = await requests.put(`/boards`, boardData);
       mutate();
       return response;
     }, 'updateBoard');
@@ -50,10 +35,9 @@ export function useBoards(workspaceId?: number, boardId?: number) {
     }, 'deleteBoard');
 
   return {
-    boards: data,
-    board,
-    error: boardError || error,
-    isLoading: boardLoading || isLoading,
+    data,
+    error,
+    isLoading,
     createBoard,
     updateBoard,
     deleteBoard,

@@ -3,6 +3,7 @@
 import BoardList from '@/components/board/board-list';
 import PageLoader from '@/components/ui/page-loader';
 import { useBoards } from '@/helper/boards';
+import { Board, Workspace } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -11,9 +12,10 @@ function BoardsContent() {
   const searchParams = useSearchParams();
   const workspaceId = searchParams.get('workspace');
 
-  const { boards, isLoading, error, createBoard, mutate } = useBoards(
-    workspaceId ? parseInt(workspaceId) : undefined
-  );
+  const { data, isLoading, error, createBoard, mutate } = useBoards<{
+    boards: Board[];
+    workspace: Workspace;
+  }>(workspaceId ? parseInt(workspaceId) : undefined);
 
   const handleCreateBoard = async (data: {
     title: string;
@@ -59,9 +61,9 @@ function BoardsContent() {
   return (
     <div className='animate-fade-in-up'>
       <BoardList
-        boards={boards.boards || []}
+        boards={data.boards || []}
         onCreateBoard={handleCreateBoard}
-        workspace={boards.workspace}
+        workspace={data.workspace}
       />
     </div>
   );

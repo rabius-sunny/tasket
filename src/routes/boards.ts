@@ -9,8 +9,7 @@ boardsRouter.use(authenticate);
 
 // Create a new board
 boardsRouter.post('/', async (c) => {
-  const boardData = await c.req.json();
-  return boardController.createBoard(boardData, c);
+  return boardController.createBoard(c);
 });
 
 // Get all boards in a workspace

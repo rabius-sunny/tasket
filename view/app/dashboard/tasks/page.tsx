@@ -2,8 +2,8 @@
 
 import { KanbanBoard } from '@/components/board/kanban-board';
 import PageLoader from '@/components/ui/page-loader';
+import { useBoards } from '@/helper/boards';
 import { useTasks } from '@/helper/tasks';
-import { useAsync } from '@/lib/hooks';
 import { Board, Task } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -16,8 +16,8 @@ function TasksContent() {
     data: selectedBoard,
     error: boardError,
     isLoading: boardLoading,
-    mutate: mutateBoardData
-  } = useAsync<Board>(boardId ? `/boards/${boardId}` : null);
+    mutate: mutateBoard
+  } = useBoards<{ boards: Board }>(undefined, Number(boardId));
 
   const {
     tasks,
@@ -104,7 +104,7 @@ function TasksContent() {
           </p>
           <button
             onClick={() => {
-              mutateBoardData();
+              mutateBoard();
               mutateTasks();
             }}
             className='bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105'
@@ -119,7 +119,7 @@ function TasksContent() {
   return (
     <div className='animate-fade-in-up'>
       <KanbanBoard
-        board={{ ...selectedBoard, tasks: tasks || [] }}
+        board={{ ...selectedBoard?.boards, tasks: tasks || [] }}
         onUpdateTask={handleUpdateTask}
         onCreateTask={handleCreateTask}
         onDeleteTask={handleDeleteTask}
