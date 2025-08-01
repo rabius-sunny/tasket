@@ -80,12 +80,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setCookie('token', data.token, 7);
       localStorage.setItem('user', JSON.stringify(newUser));
 
-      let redirectTo = '/dashboard/workspace';
+      let redirectTo = '/dashboard/workspaces';
 
       const redirectUrl = searchParams.get('redirect');
       if (redirectUrl) {
         const decryptedUrl = await decrypt(redirectUrl);
-        redirectTo = (decryptedUrl as string) || '/dashboard/workspace';
+        redirectTo = (decryptedUrl as string) || '/dashboard/workspaces';
       }
 
       push(redirectTo);
@@ -96,9 +96,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
-    deleteCookie('token');
-    window.location.reload();
+    if (window.confirm('Are you sure you want to log out?')) {
+      localStorage.removeItem('user');
+      deleteCookie('token');
+      window.location.reload();
+    }
   };
 
   return (

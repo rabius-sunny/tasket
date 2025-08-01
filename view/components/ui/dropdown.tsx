@@ -126,13 +126,13 @@ const DropdownItem = ({
   variant = 'default'
 }: DropdownItemProps) => {
   const baseStyles =
-    'block w-full px-4 py-2 text-sm text-left transition-colors first:rounded-t-lg last:rounded-b-lg cursor-pointer';
+    'block font-medium w-full px-4 py-2 text-sm text-left transition-colors first:rounded-t-lg last:rounded-b-lg cursor-pointer';
 
   const variants = {
     default:
-      'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white',
+      'text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white',
     danger:
-      'text-error hover:bg-error-50 dark:hover:bg-error-900/20 hover:text-error-600'
+      'text-error hover:bg-red-100 dark:hover:bg-error-900/20 hover:text-error-600'
   };
 
   const disabledStyles = 'opacity-50 cursor-not-allowed pointer-events-none';

@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 interface AvatarProps {
   src?: string;
   alt?: string;
+  home?: boolean;
   fallback?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -17,6 +18,7 @@ const Avatar = ({
   alt,
   fallback,
   size = 'md',
+  home,
   className,
   group
 }: AvatarProps) => {
@@ -27,15 +29,7 @@ const Avatar = ({
     xl: 'h-16 w-16 text-lg'
   };
 
-  const initials =
-    fallback ||
-    (alt
-      ? alt
-          .split(' ')
-          .map((n) => n[0])
-          .join('')
-          .toUpperCase()
-      : '');
+  const initials = fallback || alt || 'R';
 
   // Memoize color so it doesn't change on every render
   const fallbackColor = useMemo(
@@ -51,7 +45,7 @@ const Avatar = ({
         sizes[size],
         className
       )}
-      style={!src ? { backgroundColor: fallbackColor } : undefined}
+      style={!src && !home ? { backgroundColor: fallbackColor } : undefined}
     >
       {src ? (
         <div className='h-full w-full rounded-full overflow-hidden'>
@@ -61,7 +55,7 @@ const Avatar = ({
           />
         </div>
       ) : (
-        <span>{initials}</span>
+        <span>{initials.slice(0, 1).toUpperCase()}</span>
       )}
     </div>
   );
