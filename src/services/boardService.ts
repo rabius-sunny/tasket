@@ -25,7 +25,6 @@ export class BoardService {
     }
   };
 
-  // Get board with optimized task loading
   async getBoardWithTasks(boardId: number): Promise<Board | null> {
     return await prisma.board.findUnique({
       where: { id: boardId },
@@ -71,7 +70,6 @@ export class BoardService {
     });
   }
 
-  // Get boards with task counts (efficient for board listing)
   async getBoards({
     userId,
     workspaceId,

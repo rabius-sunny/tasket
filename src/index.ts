@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import authRoutes from './routes/auth';
 import boardsRoutes from './routes/boards';
+import checklistRoutes from './routes/checklist';
 import tasksRoutes from './routes/tasks';
 import usersRoutes from './routes/users';
 import workspacesRoutes from './routes/workspaces';
@@ -22,6 +23,7 @@ app.get('/health', (c) =>
 app.route('/api/workspaces', workspacesRoutes);
 app.route('/api/boards', boardsRoutes);
 app.route('/api/tasks', tasksRoutes);
+app.route('/api/checklists', checklistRoutes);
 app.route('/api/users', usersRoutes);
 app.route('/api/auth', authRoutes);
 

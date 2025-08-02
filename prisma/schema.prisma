@@ -69,10 +69,12 @@ model Checklist {
   taskId    Int
   task      Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
   items     ChecklistItem[]
+  userIds   Int[]
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 
   @@index([taskId])
+  @@index([userIds])
 }
 
 model ChecklistItem {

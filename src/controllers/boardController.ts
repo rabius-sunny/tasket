@@ -35,16 +35,10 @@ export class BoardController {
     }
   }
 
-  async getBoards({
-    c,
-    boardId,
-    workspaceId
-  }: {
-    c: Context;
-    boardId?: number;
-    workspaceId?: number;
-  }) {
+  async getBoards(c: Context) {
     const userId = c.get('user')?.id;
+    const boardId = Number(c.req.query('id'));
+    const workspaceId = Number(c.req.query('workspaceId'));
 
     try {
       const boards = await boardService.getBoards({
@@ -78,14 +72,16 @@ export class BoardController {
     }
   }
 
-  async updateBoard(boardData: any, c: Context) {
+  async updateBoard(c: Context) {
     try {
+      const boardData = await c.req.json();
       const { id, title } = boardData;
       const userId = c.get('user')?.id;
 
       await prisma.board.update({
         where: {
           id,
+          // TODO: de-normalize users on boards for faster query
           // user must be a member of the workspace to update the board
           workspace: {
             members: {
@@ -104,12 +100,15 @@ export class BoardController {
     }
   }
 
-  async deleteBoard(boardId: number, c: Context) {
+  async deleteBoard(c: Context) {
     const userId = c.get('user')?.id;
+    const boardId = Number(c.req.query('boardId'));
+
     try {
       await prisma.board.delete({
         where: {
           id: boardId,
+          // TODO: de-normalize users on boards for faster query
           // user must be a member of the workspace to delete the board
           workspace: {
             members: {

@@ -14,21 +14,17 @@ boardsRouter.post('/', async (c) => {
 
 // Get all boards in a workspace
 boardsRouter.get('/', async (c) => {
-  const boardId = Number(c.req.query('id'));
-  const workspaceId = Number(c.req.query('workspaceId'));
-  return boardController.getBoards({ c, boardId, workspaceId });
+  return boardController.getBoards(c);
 });
 
 // Update a board
 boardsRouter.put('/', async (c) => {
-  const boardData = await c.req.json();
-  return boardController.updateBoard(boardData, c);
+  return boardController.updateBoard(c);
 });
 
 // Delete a board
 boardsRouter.delete('/', async (c) => {
-  const boardId = Number(c.req.query('boardId'));
-  return boardController.deleteBoard(boardId, c);
+  return boardController.deleteBoard(c);
 });
 
 // Get board analytics
