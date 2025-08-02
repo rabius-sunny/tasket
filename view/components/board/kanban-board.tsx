@@ -10,7 +10,6 @@ import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { reorder } from '@atlaskit/pragmatic-drag-and-drop/reorder';
 
-import { CreateTaskModal } from '../task/task-components';
 import BoardHeader from './board-header';
 import { DroppableColumn } from './droppable-column';
 import { BoardContext, type BoardContextValue } from './kanban/board-context';
@@ -19,13 +18,7 @@ import { createRegistry } from './kanban/registry';
 interface KanbanBoardProps {
   board: Board;
   onUpdateTask: (taskId: number, data: Partial<Task>) => Promise<void>;
-  onCreateTask: (data: {
-    title: string;
-    description?: string;
-    dueDate?: string;
-    labels?: string[];
-    status: string;
-  }) => Promise<void>;
+  onCreateTask: (data: { title: string; status: string }) => Promise<void>;
   onDeleteTask: (taskId: number) => Promise<void>;
 }
 
@@ -35,8 +28,6 @@ export const KanbanBoard = ({
   onDeleteTask,
   onUpdateTask
 }: KanbanBoardProps) => {
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('');
   const [boardData, setBoardData] = useState<Task[]>(board.tasks || []);
 
   const [registry] = useState(createRegistry);
@@ -448,17 +439,6 @@ export const KanbanBoard = ({
       .sort((a, b) => (a.position || 0) - (b.position || 0));
   };
 
-  const handleAddTask = (status: string) => {
-    setSelectedStatus(status);
-    setShowCreateModal(true);
-  };
-
-  const handleCreateTask = async (data: { title: string; status: string }) => {
-    await onCreateTask(data);
-    setShowCreateModal(false);
-    setSelectedStatus('');
-  };
-
   const handleDeleteTask = async (taskId: number) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       await onDeleteTask(taskId);
@@ -498,24 +478,12 @@ export const KanbanBoard = ({
               columnId={column.status}
               title={column.title}
               tasks={getTasksByStatus(column.status)}
-              onAddTask={handleAddTask}
               onInlineAddTask={onCreateTask}
               onDeleteTask={handleDeleteTask}
             />
           ))}
         </div>
       </BoardContext.Provider>
-
-      {/* Create Task Modal */}
-      <CreateTaskModal
-        isOpen={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          setSelectedStatus('');
-        }}
-        onSubmit={handleCreateTask}
-        status={selectedStatus}
-      />
     </div>
   );
 };

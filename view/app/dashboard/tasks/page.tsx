@@ -27,44 +27,21 @@ function TasksContent() {
     updateTask,
     deleteTask,
     mutate: mutateTasks
-  } = useTasks(boardId ? parseInt(boardId) : undefined);
+  } = useTasks(Number(boardId));
 
-  const handleCreateTask = async (data: {
-    title: string;
-    description?: string;
-    dueDate?: string;
-    labels?: string[];
-    status: string;
-  }) => {
-    if (!boardId) return;
-
-    try {
-      await createTask({
-        ...data,
-        boardId: parseInt(boardId)
-      });
-      mutateTasks(); // Revalidate tasks
-    } catch (error) {
-      console.error('Error creating task:', error);
-    }
+  const handleCreateTask = async (data: { title: string; status: string }) => {
+    await createTask({
+      ...data,
+      boardId: Number(boardId)
+    });
   };
 
   const handleDeleteTask = async (taskId: number) => {
-    try {
-      await deleteTask(taskId);
-      mutateTasks(); // Revalidate tasks
-    } catch (error) {
-      console.error('Error deleting task:', error);
-    }
+    await deleteTask(taskId);
   };
 
-  const handleUpdateTask = async (taskId: number, data: Partial<Task>) => {
-    try {
-      await updateTask(taskId, data);
-      mutateTasks(); // Revalidate tasks
-    } catch (error) {
-      console.error('Error updating task:', error);
-    }
+  const handleUpdateTask = async (id: number, data: Partial<Task>) => {
+    await updateTask({ ...data, id });
   };
 
   if (boardLoading || tasksLoading) {

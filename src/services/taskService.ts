@@ -109,6 +109,7 @@ export class TaskService {
         dueDate: true,
         status: true,
         position: true,
+        boardId: true,
         assignee: {
           select: {
             username: true

@@ -28,7 +28,6 @@ interface DroppableColumnProps {
   columnId: string;
   title: string;
   tasks: Task[];
-  onAddTask: (status: string) => void;
   onInlineAddTask: (data: { status: string; title: string }) => Promise<void>;
   onDeleteTask: (taskId: number) => void;
 }
@@ -37,7 +36,6 @@ export const DroppableColumn = memo(function DroppableColumn({
   columnId,
   title,
   tasks,
-  onAddTask,
   onDeleteTask,
   onInlineAddTask
 }: DroppableColumnProps) {
@@ -125,14 +123,6 @@ export const DroppableColumn = memo(function DroppableColumn({
                 {tasks.length}
               </span>
             </div>
-            <Button
-              onClick={() => onAddTask(columnId)}
-              variant='ghost'
-              size='sm'
-              className='text-white hover:bg-white/20 transition-all duration-200 hover:scale-110'
-            >
-              <Plus className='h-4 w-4' />
-            </Button>
           </div>
         </div>
 
@@ -167,18 +157,6 @@ export const DroppableColumn = memo(function DroppableColumn({
                   <div className='flex flex-col items-center justify-center h-64 text-gray-500'>
                     <div className='text-6xl mb-4'>📝</div>
                     <p className='text-lg font-medium mb-2'>No tasks yet</p>
-                    <p className='text-sm text-center mb-4'>
-                      Drag tasks here or click the + button to add one
-                    </p>
-                    <Button
-                      onClick={() => onAddTask(columnId)}
-                      variant='outline'
-                      size='sm'
-                      className='hover:scale-105 transition-transform duration-200'
-                    >
-                      <Plus className='h-4 w-4 mr-2' />
-                      Add Task
-                    </Button>
                   </div>
                 )}
               </div>

@@ -27,18 +27,26 @@ const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
 });
 
 type TProps = {
-  task: Task | null;
-  isOpen: boolean;
-  onClose: () => void;
+  task: Task;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 };
 
-export default function TaskDetails({ task, isOpen, onClose }: TProps) {
+export default function TaskDetails({ task, open, setOpen }: TProps) {
   const { data: taskData, isLoading: loading } = useAsync<Task>(
-    () => task && '/tasks/' + task.id
+    () => task && `/tasks?id=${task.id}&boardId=${task.boardId}`
   );
-
-  if (!task) return null;
   if (loading || !taskData) return <div>Loading...</div>;
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCloseButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleClose();
+  };
 
   const updateTitle = (e: React.FocusEvent<HTMLInputElement>) => {
     const newTitle = e.target.value.trim();
@@ -57,8 +65,8 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
 
   return (
     <Modal
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={open}
+      onClose={handleClose}
       size='xl'
       header={
         <div className='p-2 relative flex items-center justify-between min-w-[900px] bg-gray-50 border-b border-gray-300'>
@@ -99,7 +107,7 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
             </div>
           </div>
           <Button
-            onClick={onClose}
+            onClick={handleCloseButtonClick}
             variant='ghost'
             size='sm'
             className='absolute top-2 right-2 h-8 w-8 p-0 hover:bg-gray-200'
@@ -110,6 +118,14 @@ export default function TaskDetails({ task, isOpen, onClose }: TProps) {
       }
     >
       <div className='grid grid-cols-5 pt-0! h-[80vh] min-w-[900px] overflow-x-auto bg-gray-50'>
+        <Button
+          onClick={handleCloseButtonClick}
+          variant='ghost'
+          size='sm'
+          className='fixed lg:hidden top-2 sm:top-4 rounded-full animate-pulse bg-red-500 text-white right-2 sm:right-6 md:right-8 size-8 p-0 hover:bg-gray-200 hover:text-black'
+        >
+          <X className='size-5' />
+        </Button>
         <div className='col-span-3 px-4 md:p-6 pt-0! pb-20! overflow-auto'>
           {/* Card Icon and Title */}
           <div className='flex items-center gap-2'>

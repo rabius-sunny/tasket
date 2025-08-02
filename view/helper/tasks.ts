@@ -6,25 +6,17 @@ import { mutate as globalMutate } from 'swr';
 
 export function useTasks(boardId?: number) {
   const { data, error, isLoading, mutate } = useAsync<Task[]>(
-    `/tasks?boardId=${boardId}`
+    () => boardId && `/tasks?boardId=${boardId}`
   );
 
   const createTask = async (taskData: {
     title: string;
-    description?: string;
-    labels?: string[];
-    dueDate?: string;
-    assignedTo?: number;
     status: string;
     boardId: number;
   }) =>
     handleAction(async () => {
       const formattedData = {
         title: taskData.title,
-        description: taskData.description,
-        labels: taskData.labels || [],
-        dueDate: taskData.dueDate,
-        assignedTo: taskData.assignedTo,
         status: taskData.status,
         boardId: taskData.boardId
       };
@@ -33,20 +25,18 @@ export function useTasks(boardId?: number) {
       return response;
     }, 'createTask');
 
-  const updateTask = async (
-    id: number,
-    taskData: {
-      title?: string;
-      description?: string;
-      labels?: string[];
-      dueDate?: string;
-      assignedTo?: number;
-      status?: string;
-      position?: number;
-    }
-  ) =>
+  const updateTask = async (taskData: {
+    id: number;
+    title?: string;
+    description?: string;
+    labels?: string[];
+    dueDate?: string;
+    assignedTo?: number;
+    status?: string;
+    position?: number;
+  }) =>
     handleAction(async () => {
-      const response = await requests.put(`/tasks/${id}`, taskData);
+      const response = await requests.put(`/tasks`, taskData);
       mutate();
       if (taskData.status && boardId) {
         globalMutate(`/boards/${boardId}`);
@@ -56,7 +46,7 @@ export function useTasks(boardId?: number) {
 
   const deleteTask = async (id: number) =>
     handleAction(async () => {
-      await requests.delete(`/tasks/${id}`);
+      await requests.delete(`/tasks?id=${id}`);
       mutate();
     }, 'deleteTask');
 

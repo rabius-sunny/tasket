@@ -3,8 +3,6 @@
 import { AvatarGroup } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Modal } from '@/components/ui/modal';
 import { Task } from '@/types';
 import { formatDate, getDueDateStatus } from '@/utils/date';
 import {
@@ -12,8 +10,7 @@ import {
   CheckSquare,
   Clock,
   MessageCircle,
-  MoreHorizontal,
-  Plus
+  MoreHorizontal
 } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 import TaskDetails from './task-details';
@@ -28,13 +25,24 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   function TaskCard({ task, onDelete, actionMenuTriggerRef }, ref) {
     const [showActions, setShowActions] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [open, setOpen] = useState(false);
     const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null;
+
+    const handleCloseModal = (isOpen: boolean) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        setSelectedTask(null);
+      }
+    };
 
     return (
       <div
         ref={ref}
         className='transition-all duration-200 ease-in-out'
-        onClick={() => setSelectedTask(task)}
+        onClick={() => {
+          setSelectedTask(task);
+          setOpen(true);
+        }}
       >
         <Card className='mb-3 hover:shadow-lg transition-all duration-200 cursor-grab hover:cursor-grabbing group hover:ring-1 hover:ring-indigo-500'>
           <CardContent className='p-2 py-1'>
@@ -116,115 +124,14 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
             </div>
           </CardContent>
         </Card>
-        <TaskDetails
-          task={selectedTask}
-          onClose={() => setSelectedTask(null)}
-          isOpen={!!selectedTask}
-        />
+        {selectedTask && (
+          <TaskDetails
+            task={selectedTask}
+            open={open}
+            setOpen={handleCloseModal}
+          />
+        )}
       </div>
     );
   }
 );
-
-interface CreateTaskModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: {
-    title: string;
-    description?: string;
-    labels?: string[];
-    dueDate?: string;
-    assignedTo?: number;
-    status: string;
-  }) => void;
-  status: string;
-}
-
-export const CreateTaskModal = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  status
-}: CreateTaskModalProps) => {
-  const [title, setTitle] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await onSubmit({
-        title,
-        status
-      });
-
-      // Reset form
-      setTitle('');
-      onClose();
-    } catch (error) {
-      console.error('Error creating task:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title='✨ Create New Task'
-      size='xl'
-    >
-      <div className='text-center mb-8'>
-        <div className='w-20 h-20 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
-          <Plus className='h-10 w-10 text-white' />
-        </div>
-        <h3 className='text-xl font-bold text-gray-900 mb-2'>Add a New Task</h3>
-        <p className='text-gray-600'>
-          Create a task for the{' '}
-          <span className='font-semibold text-blue-600'>
-            {status.replace('-', ' ')}
-          </span>{' '}
-          column
-        </p>
-      </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className='space-y-6'
-      >
-        <div className='space-y-4'>
-          <Input
-            label='Task Title'
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder='e.g., Design user interface, Fix login bug'
-            required
-            className='text-lg'
-          />
-        </div>
-
-        <div className='flex justify-end space-x-4 pt-8 border-t border-gray-100'>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={onClose}
-            size='lg'
-            className='px-8'
-          >
-            Cancel
-          </Button>
-          <Button
-            type='submit'
-            isLoading={isLoading}
-            size='lg'
-            className='bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-8 hover:shadow-lg transition-all duration-300 hover:scale-105'
-          >
-            {isLoading ? 'Creating...' : 'Create Task'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
-  );
-};

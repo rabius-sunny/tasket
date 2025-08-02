@@ -101,34 +101,11 @@ export class TaskController {
     const userId = c.get('user')?.id;
 
     try {
-      const {
-        id,
-        title,
-        description,
-        labels,
-        dueDate,
-        assignedTo,
-        status,
-        position
-      } = await c.req.json();
+      const { id, ...rest } = await c.req.json();
 
       await prisma.task.update({
         where: { id, userIds: { has: Number(userId) } },
-        data: {
-          ...(title && { title }),
-          ...(description && { description }),
-          ...(labels && { labels }),
-          ...(dueDate && {
-            dueDate: new Date(dueDate)
-          }),
-          ...(assignedTo && {
-            assignedTo: Number(assignedTo)
-          }),
-          ...(status && { status }),
-          ...(position !== undefined && {
-            position: typeof position === 'number' ? position : Number(position)
-          })
-        }
+        data: rest
       });
 
       return c.json({ ok: true }, 200);
@@ -140,10 +117,10 @@ export class TaskController {
   async deleteTask(c: Context) {
     const userId = c.get('user')?.id;
     try {
-      const taskId = Number(c.req.query('taskId'));
+      const id = Number(c.req.query('id'));
 
       await prisma.task.delete({
-        where: { id: taskId, userIds: { has: Number(userId) } }
+        where: { id, userIds: { has: Number(userId) } }
       });
 
       return c.json({ ok: true }, 200);
