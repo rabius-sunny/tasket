@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 
 interface BadgeProps {
   children: ReactNode;
+  onClick?: () => void;
   variant?:
     | 'default'
     | 'primary'
@@ -20,7 +21,8 @@ const Badge = ({
   variant = 'default',
   size = 'sm',
   className,
-  style
+  style,
+  onClick
 }: BadgeProps) => {
   const baseStyles = 'inline-flex items-center font-medium rounded-full';
 
@@ -41,6 +43,7 @@ const Badge = ({
 
   return (
     <span
+      onClick={onClick}
       style={style}
       className={cn(baseStyles, variants[variant], sizes[size], className)}
     >
