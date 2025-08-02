@@ -10,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      router.push('/dashboard');
+      router.push('/dashboard/workspaces');
     } else {
       router.push('/auth');
     }

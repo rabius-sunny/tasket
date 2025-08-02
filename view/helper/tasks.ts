@@ -4,9 +4,9 @@ import { Task } from '@/types';
 import { handleAction } from '@/utils/random';
 import { mutate as globalMutate } from 'swr';
 
-export function useTasks(boardId?: number) {
+export function useTasks(boardId?: number, actionOnly?: boolean) {
   const { data, error, isLoading, mutate } = useAsync<Task[]>(
-    () => boardId && `/tasks?boardId=${boardId}`
+    () => boardId && !actionOnly && `/tasks?boardId=${boardId}`
   );
 
   const createTask = async (taskData: {
@@ -39,7 +39,7 @@ export function useTasks(boardId?: number) {
       const response = await requests.put(`/tasks`, taskData);
       mutate();
       if (taskData.status && boardId) {
-        globalMutate(`/boards/${boardId}`);
+        globalMutate(`/boards?id=${boardId}&workspaceId=${undefined}`);
       }
       return response;
     }, 'updateTask');

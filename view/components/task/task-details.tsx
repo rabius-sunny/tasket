@@ -1,11 +1,11 @@
 'use client';
 
+import { useTasks } from '@/helper/tasks';
 import { useAsync } from '@/lib/hooks';
 import { Task } from '@/types';
 import { formatDate } from '@/utils/date';
 import { cn } from '@/utils/random';
 import { AlertTriangle, Calendar, CreditCard, FileText, X } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Modal } from '../ui/modal';
@@ -16,9 +16,6 @@ import TaskModalHeader from './modal/header';
 import TaskModalLabels from './modal/labels';
 import TaskCheckLists from './task-checklists';
 import TaskComments from './task-comments';
-const Avatar = dynamic(() => import('../ui/avatar').then((mod) => mod.Avatar), {
-  ssr: false
-});
 
 type TProps = {
   task: Task;
@@ -27,9 +24,14 @@ type TProps = {
 };
 
 export default function TaskDetails({ task, open, setOpen }: TProps) {
-  const { data: taskData, isLoading: loading } = useAsync<Task>(
+  const {
+    data: taskData,
+    isLoading: loading,
+    mutate
+  } = useAsync<Task>(
     () => task && `/tasks?id=${task.id}&boardId=${task.boardId}`
   );
+  const { updateTask } = useTasks();
   if (loading || !taskData) return <div>Loading...</div>;
 
   const handleClose = () => {
@@ -45,16 +47,22 @@ export default function TaskDetails({ task, open, setOpen }: TProps) {
   const updateTitle = (e: React.FocusEvent<HTMLInputElement>) => {
     const newTitle = e.target.value.trim();
     if (newTitle && newTitle !== task.title.trim()) {
-      // Call API to update task title
-      console.log('Updating task title:', newTitle);
+      updateTask({
+        id: task.id,
+        title: newTitle
+      });
+      mutate();
     }
   };
 
   const updateDescription = (e: React.FocusEvent<HTMLTextAreaElement>) => {
     const newDescription = e.target.value.trim();
     if (newDescription && newDescription !== task?.description?.trim()) {
-      // Call API to update task description
-      console.log('Updating task description:', newDescription);
+      updateTask({
+        id: task.id,
+        description: newDescription
+      });
+      mutate();
     }
   };
 
@@ -146,7 +154,7 @@ export default function TaskDetails({ task, open, setOpen }: TProps) {
                 <h3 className='font-semibold text-gray-800'>Description</h3>
               </div>
             }
-            defaultValue={task.description}
+            defaultValue={taskData.description}
           />
 
           {/* Checklists */}

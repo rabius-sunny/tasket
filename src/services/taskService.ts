@@ -8,6 +8,7 @@ export class TaskService {
       select: {
         id: true,
         labels: true,
+        description: true,
         attachments: true,
         createdAt: true,
         updatedAt: true,
