@@ -11,12 +11,18 @@ type TProps = {
   task: Task;
   loading: boolean;
   onClose: (e: React.MouseEvent) => void;
+  onStatusUpdate?: () => void; // Callback to refresh parent data
 };
 
-export default function TaskModalHeader({ task, loading, onClose }: TProps) {
+export default function TaskModalHeader({
+  task,
+  loading,
+  onClose,
+  onStatusUpdate
+}: TProps) {
   const [status, setStatus] = useState<string>();
   const isLoading = loading || !task.createdAt || !task.updatedAt;
-  const { updateTask } = useTasks(task.boardId, true);
+  const { updateTask } = useTasks({ boardId: task.boardId, actionOnly: true });
 
   useEffect(() => {
     if (task.status) {
@@ -25,11 +31,26 @@ export default function TaskModalHeader({ task, loading, onClose }: TProps) {
   }, [task]);
 
   const handleUpdateStatus = async (newStatus: string) => {
+    const previousStatus = status;
+
+    const formattedStatus = newStatus.replace(' ', '-').toLowerCase();
+
+    // Optimistic update
     setStatus(newStatus);
-    await updateTask({
-      id: task.id,
-      status: newStatus.replace(' ', '-').toLowerCase()
-    });
+
+    try {
+      await updateTask({
+        id: task.id,
+        status: formattedStatus
+      });
+
+      // Notify parent component to refresh
+      onStatusUpdate?.();
+    } catch (error) {
+      // Revert on error
+      setStatus(previousStatus);
+      console.error('Failed to update task status:', error);
+    }
   };
 
   return (
@@ -89,4 +110,4 @@ export default function TaskModalHeader({ task, loading, onClose }: TProps) {
   );
 }
 
-const statusOptions = ['Todo', 'In Progress', 'Review', 'Done'];
+const statusOptions = ['Todo', 'In Progress', 'Review', 'Completed'];

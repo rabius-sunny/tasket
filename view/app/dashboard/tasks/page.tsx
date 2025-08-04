@@ -27,7 +27,7 @@ function TasksContent() {
     updateTask,
     deleteTask,
     mutate: mutateTasks
-  } = useTasks(Number(boardId));
+  } = useTasks({ boardId });
 
   const handleCreateTask = async (data: { title: string; status: string }) => {
     await createTask({

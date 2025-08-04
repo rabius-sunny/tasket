@@ -1,7 +1,6 @@
 'use client';
 
 import { useTasks } from '@/helper/tasks';
-import { useAsync } from '@/lib/hooks';
 import { Task } from '@/types';
 import { formatDate } from '@/utils/date';
 import { cn } from '@/utils/random';
@@ -25,13 +24,13 @@ type TProps = {
 
 export default function TaskDetails({ task, open, setOpen }: TProps) {
   const {
-    data: taskData,
-    isLoading: loading,
-    mutate
-  } = useAsync<Task>(
-    () => task && `/tasks?id=${task.id}&boardId=${task.boardId}`
-  );
-  const { updateTask } = useTasks();
+    updateTask,
+    task: taskData,
+    taskLoading: loading,
+    mutate,
+    taskMutate
+  } = useTasks({ boardId: task.boardId, actionOnly: true, taskId: task.id });
+
   if (loading || !taskData) return <div>Loading...</div>;
 
   const handleClose = () => {
@@ -51,7 +50,6 @@ export default function TaskDetails({ task, open, setOpen }: TProps) {
         id: task.id,
         title: newTitle
       });
-      mutate();
     }
   };
 
@@ -62,7 +60,6 @@ export default function TaskDetails({ task, open, setOpen }: TProps) {
         id: task.id,
         description: newDescription
       });
-      mutate();
     }
   };
 
@@ -76,6 +73,11 @@ export default function TaskDetails({ task, open, setOpen }: TProps) {
           task={{ ...task, ...taskData }}
           loading={loading}
           onClose={handleCloseButtonClick}
+          onStatusUpdate={() => {
+            // Refresh the individual task data
+            mutate();
+            taskMutate();
+          }}
         />
       }
     >

@@ -4,7 +4,22 @@ import { Task } from '@/types';
 import { handleAction } from '@/utils/random';
 import { mutate as globalMutate } from 'swr';
 
-export function useTasks(boardId?: number, actionOnly?: boolean) {
+export function useTasks({
+  boardId,
+  actionOnly,
+  taskId
+}: {
+  boardId?: number | string | null;
+  actionOnly?: boolean;
+  taskId?: string | number;
+}) {
+  const {
+    data: task,
+    isLoading: taskLoading,
+    mutate: taskMutate
+  } = useAsync<Task>(
+    () => boardId && taskId && `/tasks?id=${taskId}&boardId=${boardId}`
+  );
   const { data, error, isLoading, mutate } = useAsync<Task[]>(
     () => boardId && !actionOnly && `/tasks?boardId=${boardId}`
   );
@@ -37,10 +52,16 @@ export function useTasks(boardId?: number, actionOnly?: boolean) {
   }) =>
     handleAction(async () => {
       const response = await requests.put(`/tasks`, taskData);
+
+      // Always update the current tasks list
       mutate();
+      taskMutate();
+      globalMutate(`/tasks?boardId=${boardId}`);
+
       if (taskData.status && boardId) {
         globalMutate(`/boards?id=${boardId}&workspaceId=${undefined}`);
       }
+
       return response;
     }, 'updateTask');
 
@@ -62,6 +83,9 @@ export function useTasks(boardId?: number, actionOnly?: boolean) {
     tasks: data,
     error,
     isLoading,
+    task,
+    taskLoading,
+    taskMutate,
     createTask,
     updateTask,
     deleteTask,
