@@ -35,7 +35,9 @@ export class TaskController {
         data: {
           title,
           description,
-          labels: labels || [],
+          labels: {
+            set: labels ? labels.map((label: string) => label.trim()) : []
+          },
           dueDate: dueDate ? new Date(dueDate) : null,
           board: {
             connect: { id: Number(boardId) }

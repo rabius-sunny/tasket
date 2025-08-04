@@ -116,7 +116,10 @@ export default function TaskDetails({ task, open, setOpen }: TProps) {
           <CardButton task={{ ...taskData, dueDate: task.dueDate }} />
 
           {/* labels */}
-          <TaskModalLabels labels={taskData.labels} />
+          <TaskModalLabels
+            updateTask={updateTask}
+            task={taskData}
+          />
 
           {/* Members */}
           <TaskModalMembers assignee={task.assignee || []} />
